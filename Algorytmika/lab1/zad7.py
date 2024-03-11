@@ -1,4 +1,4 @@
-def compute_prefix_function(pattern):
+def compute_prefix_function(pattern: str):
     i = 1
     j = 0
     res = [0] * len(pattern)
@@ -20,9 +20,9 @@ def compute_prefix_function(pattern):
     return res
 
 
-def kmp(text: str, pattern: str) -> list:
+def kmp(pattern: str, text: str) -> list[int]:
     i,j = 0,0
-    answers = []
+    answers: list[int] = []
     LPS = compute_prefix_function(pattern)
     while(i < len(text)):
         if(text[i] == pattern[j]):
@@ -37,4 +37,4 @@ def kmp(text: str, pattern: str) -> list:
             i+=1
     return answers
     
-    
+assert kmp("ana", "analfabetanakondana") == [0,9,16]

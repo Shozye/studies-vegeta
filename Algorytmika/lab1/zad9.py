@@ -1,11 +1,15 @@
+from copy import deepcopy
 import random
 
 class Graph:
     graph: dict[int, list[int]]
     
-    def __init__(self) -> None:
-        self.graph = dict()
+    def __init__(self, graph: dict[int, list[int]]) -> None:
+        self.graph = graph
         self.highest_node = 0
+    
+    def clone(self):
+        return Graph(deepcopy(self.graph))
     
     def add_node(self, u: int):
         self.graph[u] = list()
@@ -50,3 +54,12 @@ class Graph:
             random_edge_index -= len(edges)
 
         raise Exception("?")
+
+
+def karger_min_cut(g: Graph) -> int:
+    graph = g.clone()
+    while len(graph.graph) > 2:
+        u, v = graph.get_random_edge()
+        graph.contract_edge(u, v)
+    return len(list(graph.graph.values())[0])
+    
