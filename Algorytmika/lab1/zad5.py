@@ -3,6 +3,8 @@ def compute_prefix_function(pattern: str):
     i = 1
     j = 0
     res = [0] * len(pattern)
+    # Zlozonosc to O(n), bo if + else wykona sie max len(pattern) razy
+    # natomiast elif wykonuje sie gdy j > 0, a j zwiekszamy maksymalnie len(pattern) razy
     while i < len(pattern):
         if pattern[i] == pattern[j]:
             res[i] = j + 1
