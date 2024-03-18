@@ -1,5 +1,5 @@
 
-def lcs(x: str, y: str) -> int:
+def lcs(x: str, y: str):
     # to jakis dp jest. dp[0,0] = x[0] == y[0]
     # dp[n+1,m+1] = 1 + dp[n][m] if x[n] == x[m]
     # dp[n+1, m+1] = max(dp[n, m+1], dp[n+1, m])
