@@ -1,0 +1,76 @@
+\section{Exercise (Factory)}
+Factory produces 4 type of products. $P_1$, $P_2$, $P_3$, $P_4$.
+To create them, it uses resources $R_1$, $R_2$, $R_3$. During creation of $P_1$, and $P_2$, some of $R_i$ turns into $W_{i,j}$ - Waste from creation of $P_j$ out of resource $R_i$. 
+$W_{i,j}$ can be used in creation of $P_3$ and $P_4$, however if it won't be used, then factory will have to pay for utilization.
+Factory wants to know how to maximize profit.
+\begin{table}[H]
+    \centering
+
+    \begin{tabular}{cccc}
+    \hline
+    Resource & Min  & Max  & Cost of 1kg \\ 
+             & (kg) & (kg) & (\$)       \\ \hline
+    $R_1$     & 2000 & 6000 & 2.1        \\
+    $R_2$     & 3000 & 5000 & 1.6        \\
+    $R_3$     & 4000 & 7000 & 1.0        \\ \hline
+    \end{tabular}
+    \caption{Minimum and maximum values of resources to buy}
+\end{table}
+\begin{table}[H]
+    \centering
+
+    \begin{tabular}{cc}
+        \hline
+        Product & Value  \\ \hline
+        $P_1$      & 3\$/kg   \\
+        $P_2$      & 2.5\$/kg\\
+        $P_3$      & 0.6\$/kg \\
+        $P_4$      & 0.5\$/kg \\ \hline
+        \end{tabular}
+    
+    \caption{Value of products}
+\end{table}
+
+\begin{table}[H]
+    \centering
+
+    \begin{tabular}{cc}
+        \hline
+        Waste & Cost \\ \hline
+        $W_{1,1}$   & 0.1           \\
+        $W_{1,2}$   & 0.2           \\
+        $W_{2,1}$   & 0.2           \\
+        $W_{2,2}$   & 0.2           \\
+        $W_{3,1}$   & 0.4           \\
+        $W_{3,2}$   & 0.5          \\ \hline
+        \end{tabular}
+    
+    \caption{Disposal Costs}
+\end{table}
+
+\begin{table}[H]
+    \centering
+
+    \begin{tabular}{|l|ll|l|}
+        \hline
+        Product & Input                     &                        Variable Constraints                                                                      & Output                                                                                                     \\ \hline
+        $P_1$      & \begin{tabular}[c]{@{}l@{}}$r_1$ kg $R_1$,\\ $r_2$ kg $R_2$,\\ $r_3$ kg $R_3$\end{tabular}                          & \begin{tabular}[c]{@{}l@{}}$r_1 \geqslant = 0.2 \cdot r$, \\ $r_2 \geqslant = 0.4 \cdot r$, \\ $r_3 \leqslant = 0.1 \cdot r$\\ r=$r_1$ + $r_2$ + $r_3$\end{tabular} & \begin{tabular}[c]{@{}l@{}}$0.1 \cdot r_1$ kg W11, \\ $0.2 \cdot r_2$ kg W21,\\ $0.4 \cdot r_3$ kg W31\\ Other P1\end{tabular}  \\ \hline
+        $P_2$      & \begin{tabular}[c]{@{}l@{}}$r_1$ kg $R_1$,\\ $r_2$ kg $R_2$,\\ $r_3$ kg $R_3$\end{tabular}                          & \begin{tabular}[c]{@{}l@{}}$r_1 \geqslant = 0.1  \cdot  r$, \\ $r_3 \leqslant = 0.3 \cdot  r$\\ r = $r_1$ + $r_2$ + $r_3$\end{tabular}                           & \begin{tabular}[c]{@{}l@{}}$0.2 \cdot r_1$ kg W12, \\ $0.2 \cdot r_2$ kg W22,\\ $0.5 \cdot r_3$ kg W32,\\ Other P2\end{tabular} \\ \hline
+        $P_3$      & \begin{tabular}[c]{@{}l@{}}$w_{1,1}$ kg $W_{1,1}$\\ $w_{2,1}$ kg $W_{2,1}$\\ $w_{3,1}$ kg $W_{3,1}$\\ $r_1$ kg $R_1$\end{tabular} & \begin{tabular}[c]{@{}l@{}}$r_1 = 0.3 \cdot r$\\ $r = w_{1,1}+ w_{2,1} + w_{3,1} + r_1$\end{tabular}                                                            & r kg P3                                                                                                    \\ \hline
+        $P_4$      & \begin{tabular}[c]{@{}l@{}}$w_{1,2}$ kg $W_{1,2}$\\ $w_{2,2}$ kg $W_{2,2}$\\ $w_{3,2}$ kg $W_{3,2}$\\ $r_2$ kg $R_2$\end{tabular} & \begin{tabular}[c]{@{}l@{}}$r_2 = 0.3 \cdot r$\\ $r = w_{1,2} + w_{2,2}+ w_{3,3} + r_2$\end{tabular}                                                           & r kg P4                                                                                                    \\ \hline
+        \end{tabular}
+    
+    \caption{Possible Production Lines}
+\end{table}
+
+
+
+
+Do the following
+\begin{enumerate}
+    \item Describe problem in \texttt{GNU MathProg} and solve it in \texttt{glpsol} \notdone
+    \item How many resources $R_1$, $R_2$, $R_3$ should factory buy? \notdone
+    \item How many resources should be used to what product? \notdone
+    \item How many waste should be utilized and how many should go towards production of $C$ and $D$? \notdone
+\end{enumerate}
+   

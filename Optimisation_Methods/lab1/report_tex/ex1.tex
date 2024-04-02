@@ -1,0 +1,16 @@
+\section{Exercise (Sysło, Deo, Kowalik 1993)}
+One of the tests for precision and resistance of LP algorithms is the following problem: 
+\begin{center}
+    min $\textbf{c}^T \textbf{x}$ 
+    $$A\textbf{x} = \textbf{b}\textrm{,}\quad \textbf{x} \geqslant \textbf{0}$$
+    $$A_{ij} = \frac{1}{i+j-1}\textrm{,}\quad i, j = 1,\dots,n$$ 
+    $$c_i = b_i = \sum_{j=1}^{n} \frac{1}{i+j-1}\textrm{,}\quad i=1,\dots,n$$
+\end{center}
+It's solution should be $\textbf{x} = \textbf{1}$. Problem is \textit{ill-conditioned} due to $A$ being Hilbert's Matrix.
+\begin{enumerate}
+    \item Describe problem in \texttt{GNU MathProg} and solve it in \texttt{glpsol} \notdone
+    \item Use \texttt{glpsol} to find $n$ for which there is 2-digit precision. \notdone
+    \item Print relative error $||x-\bar{x}||_2 / ||x||_2$ for every $n$. $\bar{x}$ is computed $x$ \notdone
+    \item Generalize the solution by separating model and data. Maximally parametrize model description \notdone
+    \item * Solve it with all \texttt{clp}, \texttt{HiGHS}, \texttt{GLPK} \neverdone
+\end{enumerate}

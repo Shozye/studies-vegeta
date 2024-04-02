@@ -1,0 +1,43 @@
+
+\section{Exercise (Student Schedule)}
+Student needs to choose his schedule. He needs to pick 5 subjects (A, B, C, D, E). For every subject there are 4 groups and he needs to pick one of them.
+Groups are following:
+\begin{table}[H]
+    \centering
+
+    \begin{tabular}{lccccc}
+        & A                              & B                              & C                              & D                              & E                                 \\ \cline{2-6} 
+\multicolumn{1}{l|}{I}   & \multicolumn{1}{l|}{Pn. 13-15} & \multicolumn{1}{l|}{Pn. 13-15} & \multicolumn{1}{l|}{Wt. 8-11}  & \multicolumn{1}{l|}{Pn. 8-10}  & \multicolumn{1}{l|}{Pn. 9-10:30}  \\ \cline{2-6} 
+\multicolumn{1}{l|}{II}  & \multicolumn{1}{l|}{Wt. 10-12} & \multicolumn{1}{l|}{Wt. 10-12} & \multicolumn{1}{l|}{Wt. 10-13} & \multicolumn{1}{l|}{Pn. 8-10}  & \multicolumn{1}{l|}{Pn. 10:30-12} \\ \cline{2-6} 
+\multicolumn{1}{l|}{III} & \multicolumn{1}{l|}{Śr. 10-12} & \multicolumn{1}{l|}{Śr. 11-13} & \multicolumn{1}{l|}{Cz. 15-18} & \multicolumn{1}{l|}{Cz. 13-15} & \multicolumn{1}{l|}{Pt. 11-12:30} \\ \cline{2-6} 
+\multicolumn{1}{l|}{IV}  & \multicolumn{1}{l|}{Śr. 11-13} & \multicolumn{1}{l|}{Cz. 8-10}  & \multicolumn{1}{l|}{Cz. 17-20} & \multicolumn{1}{l|}{Pt. 13-15} & \multicolumn{1}{l|}{Pt. 13-14:30} \\ \cline{2-6} 
+\end{tabular}
+    \label{GroupHours}
+\end{table}
+He also has preferences and they are following:
+\begin{table}[H]
+    \centering
+
+    \begin{tabular}{lccccc}
+        & A                              & B                              & C                              & D                              & E                                 \\ \cline{2-6} 
+\multicolumn{1}{l|}{I}   & \multicolumn{1}{l|}{5} & \multicolumn{1}{l|}{4} & \multicolumn{1}{l|}{3}  & \multicolumn{1}{l|}{10}  & \multicolumn{1}{l|}{0}  \\ \cline{2-6} 
+\multicolumn{1}{l|}{II}  & \multicolumn{1}{l|}{4} & \multicolumn{1}{l|}{4} & \multicolumn{1}{l|}{5} & \multicolumn{1}{l|}{10}  & \multicolumn{1}{l|}{5} \\ \cline{2-6} 
+\multicolumn{1}{l|}{III} & \multicolumn{1}{l|}{10} & \multicolumn{1}{l|}{5} & \multicolumn{1}{l|}{7} & \multicolumn{1}{l|}{7} & \multicolumn{1}{l|}{3} \\ \cline{2-6} 
+\multicolumn{1}{l|}{IV}  & \multicolumn{1}{l|}{5} & \multicolumn{1}{l|}{6}  & \multicolumn{1}{l|}{8} & \multicolumn{1}{l|}{5} & \multicolumn{1}{l|}{4} \\ \cline{2-6} 
+\end{tabular}
+    \label{GroupPreference}
+\end{table}
+He wants to sign up for classes and choose schedule that maximizes sum of preference points.
+There are also 3 constraints that he wants to meet:
+\begin{itemize}
+    \item Do not sign up for more than 4 hours a day
+    \item Everyday, have 1 hour lunch break between 12 and 14.
+    \item Practice sport at least once a week. Trainings are Mon. 13-15, Wed. 11-13, Wed. 13-15
+\end{itemize}
+
+Do the following
+\begin{enumerate}
+    \item Describe problem in \texttt{GNU MathProg} and solve it in \texttt{glpsol} \notdone
+    \item Is there a schedule where all groups are only in Mon, Tue, Thu, and all preference points are not less than 5? \notdone
+\end{enumerate}
+   
