@@ -38,8 +38,6 @@ def main():
     driver.get(url)
     while driver.title != "Mapy Google":
         time.sleep(1)
-        print("Kliknij ten jebany przycisk")
-        # W tym czasie kliknij tej jebany przycisk, 
         # ewentualnie zmien zhardkodowany tytul
         
     for c1 in cities:
