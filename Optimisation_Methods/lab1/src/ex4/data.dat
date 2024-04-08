@@ -13,19 +13,23 @@ set GroupSubjectIndexes := 1 2 3 4;
 set Activities := LMon LTue LWed LThu LFri Sport;
 set GroupActivityIndexes := 1 2 3;
 
-param GroupsStartHours :    A   B   C   D   E :=
+param GroupsStartHours :    1   2   3   4   5 :=
                         1   26  26  16  16  18
                         2   20  20  20  16  21
                         3   20  22  30  26  22
                         4   22  16  34  26  26;
 
-param GroupsStartDays :     A   B   C   D   E :=
+param GroupsStartDays :     1   2   3   4   5 :=
                         1   1   1   2   1   1
                         2   2   2   2   1   1
                         3   3   3   4   4   5
                         4   3   4   4   5   5;
 
-param GroupTime := A 4 B 4 C 6 D 4 E 3;
+param GroupTime := 1 4 
+    2 4 
+    3 6 
+    4 4 
+    5 3;
 
 param ActivityStartHours :  LMon    LTue    LWed    LThu    LFri    Sport :=
                         1   24      24      24      24      24      26
@@ -40,7 +44,7 @@ param ActivityStartDays :   LMon    LTue    LWed    LThu    LFri    Sport :=
 
 param ActivityTime := LMon 2 LTue 2 LWed 2 LThu 2 LFri 2 Sport 4;
 
-param Preferences :     A   B   C   D   E :=
+param Preferences :     1   2   3   4   5 :=
                     1   5   4   3   10  0
                     2   4   4   5   10  5
                     3   10  5   7    7  3

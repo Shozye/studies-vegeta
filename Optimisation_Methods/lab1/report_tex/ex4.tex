@@ -42,21 +42,84 @@ Do the following
 \end{enumerate}
    
 \subsection{Model}
+\subsubsection*{Names}
+\begin{itemize}
+    \item $\textrm{S}$ --- Subjects
+    \item $\textrm{GSI}$ --- Group indexes for subjects
+    \item $\textrm{GAI}$ --- Group indexes for activities
+    \item $\textrm{A}$ --- Activities such as Lunches at every day and sport.
+    \item $\textrm{SH}$ --- Schedule Hours (0..48)
+    \item $\textrm{D}$ --- Days
+\end{itemize}
 \subsubsection*{Parameters}
 \begin{itemize}
-    \item 
+    \item $\textrm{GSH}_{g \in \textrm{GSI}, s \in \textrm{S}}$ - Group Start Hours for given group index $g$ and subject $s$
+    \item $\textrm{GSD}_{g \in \textrm{GSI}, s \in \textrm{S}}$ - Group Start Days for given group index $g$ and subject $s$
+    \item $\textrm{ASH}_{g \in \textrm{GAI}, a \in \textrm{A}}$ - Activity Start Hours for given group index $g$ and activity $a$
+    \item $\textrm{ASD}_{g \in \textrm{GAI}, a \in \textrm{A}}$ - Activity Start Days for given group index $g$ and activity $a$
+    \item $\textrm{P}_{g \in \textrm{GSI}, s \in \textrm{S}}$ - Preference of picking group index $g$ and subject $s$
+    \item $\textrm{TA}_{a \in \textrm{A}}$ --- Time needed for activity $a$
+    \item $\textrm{TS}_{s \in \textrm{S}}$ --- Time needed for subject $s$
 \end{itemize}
 \subsubsection*{Decision Variables}
 \begin{itemize}
-    \item 
+    \item $\textrm{GP}_{g \in \textrm{GSI}, s \in \textrm{S}}$ --- Group Subjects picked by student
+    \item $\textrm{AP}_{g \in \textrm{GAI}, a \in \textrm{A}}$ --- Group Activities picked by student
 \end{itemize}
 \subsubsection*{Constraints}
 \begin{itemize}
-    \item 
+    \item Student have to take one group from every activity $i$ 
+     $$\sum_{j \in \textrm{GAI}} \textrm{AP}_{j,i} = 1$$
+     \item Student have to take one group from every subject $i$ 
+     $$\sum_{j \in \textrm{GSI}} \textrm{GP}_{j,i} = 1$$
+     \item Do not allow multitasking by calculating for every day $d$ and hour$h$ and check if overlaps happen
+     $$
+     \textrm{activity}_{d,h} := \sum_{g \in \textrm{GAI}, a \in \textrm{A}}  [\textrm{ASD}_{g,a} = d] \cdot [\textrm{ASH}_{g,a} \leqslant h]\cdot [ h \leq \textrm{ASH}_{g,a} + \textrm{AT}_a]  \cdot [\textrm{AP} = 1]
+     $$ 
+     $$
+     \textrm{subject}_{d,h} := \sum_{g \in \textrm{GSI}, a \in \textrm{S}}  [\textrm{GSD}_{g,a} = d] \cdot [\textrm{GSH}_{g,a} \leqslant h]\cdot [ h \leq \textrm{GSH}_{g,a} + \textrm{GT}_a]  \cdot [\textrm{GP} = 1]
+     $$ 
+     $$ \textrm{activity}_{d,h} + \textrm{subject}_{d,h} \leqslant 1 $$ 
+    \item Do not overload on certain day $d$
+    $$
+    \sum_{g \in \textrm{GSI}, s \in \textrm{S}} [\textrm{GST}_{g,s} = d] \cdot [\textrm{GP}_[g,s] = 1] \cdot \textrm{GT}_s \leqslant 8
+    $$
 \end{itemize}
 \subsubsection*{Objective Function}
-\begin{itemize}
-    \item 
-\end{itemize}
+Sum of preferences of picked groups
+$$
+\sum_{g \in \textrm{GSI}, s \in \textrm{S}} [\textrm{GP}_{g,s} \cdot P_{g,s}]$$
 \subsection{Sources}
 Solution in \texttt{GNU MathProg} can be found in \textit{src/ex4/model.mod} and \textit{src/ex4/data.dat} .
+
+\subsection{Solution Basic}
+Student can acquire $37$ preference points at most and should sign up for following subjects:
+\begin{table}[H]
+    \centering
+
+    \begin{tabular}{lccccc}
+        & A                              & B                              & C                              & D                              & E                                 \\ \cline{2-6} 
+\multicolumn{1}{l|}{I}   & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{1}  & \multicolumn{1}{l|}{0}  \\ \cline{2-6} 
+\multicolumn{1}{l|}{II}  & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{0}  & \multicolumn{1}{l|}{1} \\ \cline{2-6} 
+\multicolumn{1}{l|}{III} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{0} \\ \cline{2-6} 
+\multicolumn{1}{l|}{IV}  & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{0} \\ \cline{2-6} 
+\end{tabular}
+
+\end{table} 
+
+\subsection{Solution Strict}
+Student can acquire $28$ preference points at most and should sign up for following subjects:
+
+\begin{table}[H]
+    \centering
+
+    \begin{tabular}{lccccc}
+        & A                              & B                              & C                              & D                              & E                                 \\ \cline{2-6} 
+\multicolumn{1}{l|}{I}   & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{0}  & \multicolumn{1}{l|}{0}  \\ \cline{2-6} 
+\multicolumn{1}{l|}{II}  & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{0}  & \multicolumn{1}{l|}{1} \\ \cline{2-6} 
+\multicolumn{1}{l|}{III} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{0} \\ \cline{2-6} 
+\multicolumn{1}{l|}{IV}  & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{0} & \multicolumn{1}{l|}{0} \\ \cline{2-6} 
+\end{tabular}
+
+\end{table}
+
