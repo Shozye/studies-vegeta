@@ -31,7 +31,8 @@ subject to activity_pick{i in Activities}:
 
 subject to group_changes_schedule{i in Subjects, j in GroupSubjectIndexes}:
     if groupsPick[j, i] = 1 then
-    sum{k in 0..(GroupTime[Subjects]-1)} schedule[GroupsStartDays[j, i], k+GroupsStartHours[j,i]];
+    sum{k in 0..(GroupTime[Subjects]-1)} schedule[GroupsStartDays[j, i], k+GroupsStartHours[j,i]] = ;
+
 
 
 var x >= 0;
