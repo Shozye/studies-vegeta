@@ -33,7 +33,41 @@ Plan out camper relocation with following constraints:
 \end{itemize}
 Do the following
 \begin{enumerate}
-    \item Describe problem in \texttt{GNU MathProg} and solve it in \texttt{glpsol} \notdone
-    \item Generalize the solution by separating model and data. Maximally parametrize model description \notdone
-    \item Is explicitly writing in model \textit{decision variables are integers} necessary? \notdone
+    \item Describe problem in \texttt{GNU MathProg} and solve it in \texttt{glpsol} \done
+    \item Generalize the solution by separating model and data. Maximally parametrize model description \done
+    \item Is explicitly writing in model \textit{decision variables are integers} necessary? \done \\
+    No. There is no reason to. The only possible way to floating point variables to show up in solution, would be if from one city we would send to many different cities at the same time, which could be the case if cost of driving to these cities was the same. Although I could probably make some proof that greedy method of choosing is the best method, so we need to fill shortage in full. As shortage is integer, we do not create any floats. I checked it by looking through $s_{i,j,k}$.
 \end{enumerate}
+
+\subsection{Model}
+\subsubsection*{Parameters}
+\begin{itemize}
+    \item $C$ --- Cities that company is located at.
+    \item $T = \{\mathcal{B}, \mathcal{V}\}$ --- types of campers. $\mathcal{B}$ stands for BASIC and $\mathcal{V}$ stands for VIP
+    \item $\delta_{i, j} \quad i \in C, j \in C$ --- Distance between $i$ and $j$.
+    \item $u_{i, j} \quad i \in C, t \in T$ --- Surplus of campers in city $i$ and type $t$. 
+    \item $d_{i, j} \quad i \in C, t \in T$ --- Shortage of campers in city $i$ and type $t$.
+    \item $p$ --- Cost of transport per km for BASIC.
+\end{itemize}
+\subsubsection*{Decision Variables}
+\begin{itemize}
+    \item $s_{t,j,k} \quad t \in T, j \in C, k \in C$ --- How many campers of type $t$ should we send from city $j$ to city $k$. 
+\end{itemize}
+\subsubsection*{Constraints}
+\begin{itemize}
+    \item Any city $c_1$ , cannot send more than amount of campers of type $t$ on surplus.
+    $$ \sum_{c_2 \in C} \quad s_{t,c_1,c_2} \leqslant u_{c_1, c_2}$$
+    \item Shortage of VIP campers in every city $c_1$ must be satisfied
+    $$\sum_{c_2 \in C} s_{\mathcal{V}, c_2, c_1} \geqslant d_{c_1}$$
+    \item Shortage of BASIC campers in every city $c_1$ must be satisfied. Also, vips from the same city can be BASIC. They do it by sending itself to the same city they are in.
+    $$\sum_{c_2 \in C, t \in T} s_{t, c_2, c_1} \geqslant \sum_{t \in T} d_{t, c_1}$$
+\end{itemize}
+\subsubsection*{Objective Function}
+\begin{itemize}
+    \item Minimize cost of sending campers to different cities
+    $$\textrm{Minimize} \quad p \cdot \sum_{c_1 \in C, c_2 \in C} \delta_{c_1, c_2} \cdot (s_{\mathcal{B}, c_1, c_2} + 1.15s_{\mathcal{V}, c_1, c_2})$$
+\end{itemize}
+\subsection{Sources}
+Solution in \texttt{GNU MathProg} can be found in \textit{src/ex2/model.mod} and \textit{src/ex2/data.dat} .
+\subsection{Solution}
+Lowest possible cost of sending campers to different cities according to \textit{glpsol} is $20595.8$

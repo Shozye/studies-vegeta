@@ -1,0 +1,69 @@
+/* Mateusz Pełechaty, 261737 */
+data;
+set Cities := 
+    Warszawa
+    Gdansk
+    Szczecin
+    Wroclaw
+    Krakow
+    Berlin
+    Rostok
+    Lipsk
+    Praga
+    Brno
+    Bratyslawa
+    Koszyce
+    Budapeszt;
+
+set Standards := 'BASIC' 'VIP';
+
+param CostsPerKm := 'BASIC' 1 'VIP' 1.15;
+
+
+param Distances : Warszawa Gdansk Szczecin Wroclaw Krakow Berlin Rostok Lipsk Praga Brno Bratyslawa Koszyce Budapeszt :=
+    Warszawa 0 340 567 351 299 573 797 727 741 540 662 530 858 
+    Gdansk 340 0 368 482 598 511 628 727 734 765 887 846 1084 
+    Szczecin 559 369 0 395 648 150 243 365 498 611 748 896 944 
+    Wroclaw 355 482 418 0 272 344 595 381 286 402 410 520 674 
+    Krakow 292 595 651 272 0 601 852 637 535 334 456 257 395 
+    Berlin 593 511 150 346 598 0 234 191 349 552 675 846 872 
+    Rostok 797 622 244 574 827 233 0 384 577 781 904 1075 1123 
+    Lipsk 725 725 363 374 626 194 382 0 254 455 578 874 775 
+    Praga 688 734 498 289 535 349 600 255 0 205 328 663 525 
+    Brno 539 763 612 352 331 554 805 460 206 0 130 460 326 
+    Bratyslawa 652 876 750 413 455 677 928 583 328 130 0 403 194 
+    Koszyce 528 842 896 519 256 846 1097 921 659 458 438 0 262 
+    Budapeszt 783 1007 1022 609 395 874 1124 775 525 326 201 262 0 ;
+
+param Shortages :     
+        BASIC VIP :=
+    Warszawa 0 4
+    Gdansk  20 0
+    Szczecin 0 0
+    Wroclaw 8 0
+    Krakow 0 8
+    Berlin 16 4
+    Rostok 2 0
+    Lipsk 3 0
+    Praga 0 4
+    Brno 9 0
+    Bratyslawa 4 0
+    Koszyce 4 0
+    Budapeszt 8 0;
+
+param Surplus :     
+        BASIC VIP :=
+    Warszawa 14 0
+    Gdansk  0 2
+    Szczecin 12 4
+    Wroclaw 0 10
+    Krakow 10 0
+    Berlin 0 0
+    Rostok 0 4
+    Lipsk 0 10
+    Praga 10 0
+    Brno 0 2
+    Bratyslawa 0 8
+    Koszyce 0 4
+    Budapeszt 0 4;
+end;

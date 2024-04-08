@@ -1,0 +1,4 @@
+/* Mateusz Pełechaty, 261737 */ 
+data;
+param n := 2;
+end;

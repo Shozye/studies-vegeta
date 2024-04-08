@@ -54,8 +54,8 @@ Factory wants to know how to maximize profit.
     \begin{tabular}{|l|ll|l|}
         \hline
         Product & Input                     &                        Variable Constraints                                                                      & Output                                                                                                     \\ \hline
-        $P_1$      & \begin{tabular}[c]{@{}l@{}}$r_1$ kg $R_1$,\\ $r_2$ kg $R_2$,\\ $r_3$ kg $R_3$\end{tabular}                          & \begin{tabular}[c]{@{}l@{}}$r_1 \geqslant = 0.2 \cdot r$, \\ $r_2 \geqslant = 0.4 \cdot r$, \\ $r_3 \leqslant = 0.1 \cdot r$\\ r=$r_1$ + $r_2$ + $r_3$\end{tabular} & \begin{tabular}[c]{@{}l@{}}$0.1 \cdot r_1$ kg W11, \\ $0.2 \cdot r_2$ kg W21,\\ $0.4 \cdot r_3$ kg W31\\ Other P1\end{tabular}  \\ \hline
-        $P_2$      & \begin{tabular}[c]{@{}l@{}}$r_1$ kg $R_1$,\\ $r_2$ kg $R_2$,\\ $r_3$ kg $R_3$\end{tabular}                          & \begin{tabular}[c]{@{}l@{}}$r_1 \geqslant = 0.1  \cdot  r$, \\ $r_3 \leqslant = 0.3 \cdot  r$\\ r = $r_1$ + $r_2$ + $r_3$\end{tabular}                           & \begin{tabular}[c]{@{}l@{}}$0.2 \cdot r_1$ kg W12, \\ $0.2 \cdot r_2$ kg W22,\\ $0.5 \cdot r_3$ kg W32,\\ Other P2\end{tabular} \\ \hline
+        $P_1$      & \begin{tabular}[c]{@{}l@{}}$r_1$ kg $R_1$,\\ $r_2$ kg $R_2$,\\ $r_3$ kg $R_3$\end{tabular}                          & \begin{tabular}[c]{@{}l@{}}$r_1 \geqslant 0.2 \cdot r$, \\ $r_2 \geqslant 0.4 \cdot r$, \\ $r_3 \leqslant 0.1 \cdot r$\\ $r=r_1 + r_2 + r_3$\end{tabular} & \begin{tabular}[c]{@{}l@{}}$0.1 \cdot r_1$ kg W11, \\ $0.2 \cdot r_2$ kg W21,\\ $0.4 \cdot r_3$ kg W31\\ Other P1\end{tabular}  \\ \hline
+        $P_2$      & \begin{tabular}[c]{@{}l@{}}$r_1$ kg $R_1$,\\ $r_2$ kg $R_2$,\\ $r_3$ kg $R_3$\end{tabular}                          & \begin{tabular}[c]{@{}l@{}}$r_1 \geqslant 0.1  \cdot  r$, \\ $r_3 \leqslant 0.3 \cdot  r$\\ $r=r_1 + r_2 + r_3$\end{tabular}                           & \begin{tabular}[c]{@{}l@{}}$0.2 \cdot r_1$ kg W12, \\ $0.2 \cdot r_2$ kg W22,\\ $0.5 \cdot r_3$ kg W32,\\ Other P2\end{tabular} \\ \hline
         $P_3$      & \begin{tabular}[c]{@{}l@{}}$w_{1,1}$ kg $W_{1,1}$\\ $w_{2,1}$ kg $W_{2,1}$\\ $w_{3,1}$ kg $W_{3,1}$\\ $r_1$ kg $R_1$\end{tabular} & \begin{tabular}[c]{@{}l@{}}$r_1 = 0.3 \cdot r$\\ $r = w_{1,1}+ w_{2,1} + w_{3,1} + r_1$\end{tabular}                                                            & r kg P3                                                                                                    \\ \hline
         $P_4$      & \begin{tabular}[c]{@{}l@{}}$w_{1,2}$ kg $W_{1,2}$\\ $w_{2,2}$ kg $W_{2,2}$\\ $w_{3,2}$ kg $W_{3,2}$\\ $r_2$ kg $R_2$\end{tabular} & \begin{tabular}[c]{@{}l@{}}$r_2 = 0.3 \cdot r$\\ $r = w_{1,2} + w_{2,2}+ w_{3,3} + r_2$\end{tabular}                                                           & r kg P4                                                                                                    \\ \hline
         \end{tabular}
@@ -68,9 +68,115 @@ Factory wants to know how to maximize profit.
 
 Do the following
 \begin{enumerate}
-    \item Describe problem in \texttt{GNU MathProg} and solve it in \texttt{glpsol} \notdone
-    \item How many resources $R_1$, $R_2$, $R_3$ should factory buy? \notdone
-    \item How many resources should be used to what product? \notdone
-    \item How many waste should be utilized and how many should go towards production of $C$ and $D$? \notdone
+    \item Describe problem in \texttt{GNU MathProg} and solve it in \texttt{glpsol} \done
+    \item How many resources $R_1$, $R_2$, $R_3$ should factory buy? \done
+    \item How many resources should be used to what product? \done
+    \item How many waste should be utilized and how many should go towards production of $C$ and $D$? \done
 \end{enumerate}
    
+\subsection{Model}
+\subsubsection*{Parameters}
+\begin{itemize}
+    \item $\mathcal{R} = \{ 1, 2, 3\}$--- Indexes of resources
+    \item $\mathcal{P} = \{ 1, 2, 3, 4 \}$ --- Indexes of products, although $\mathcal{P}^1$ and $\mathcal{P}^2$ will mean first and second class products
+    \item $L_{i} \quad i \in \mathcal{R}$ --- lower bound on buying resource $i$.
+    \item $U_{i} \quad i \in \mathcal{R}$ --- upper bound on buying resource $i$. 
+    \item $C_{i} \quad i \in \mathcal{R}$ --- cost of buying resource $i$.
+    \item $P_{i} \quad i \in \mathcal{P}$ --- price of product $i$
+    \item $Wc_{i, j} \quad i \in \mathcal{R}, j \in \mathcal{P}^1$ --- Cost of utilizing wastes from resource $i$ created in production of $j$
+    \item $W_{i,j} \quad i \in \mathcal{R}, j \in \mathcal{P}^1$ --- Factor of which wastes from resource $i$ will be created in production line $j$
+    \item $M^{\geqslant}_{i,j} \quad i \in \mathcal{R}, j \in \mathcal{P}$ --- Constraint: \textit{Amount of resource $i$ should be not less than $M_{i,j}$ during production of $j$}.
+    \item $M^{\leqslant}_{i,j} \quad i \in \mathcal{R}, j \in \mathcal{P}$ --- Constraint: \textit{Amount of resource $i$ should be not more than $M_{i,j}$ during production of $j$}.
+
+\end{itemize}
+\subsubsection*{Decision Variables}
+\begin{itemize}
+    \item $b_{i} \quad i \in \mathcal{R}$ --- How many resources of type $i$ should company buy.
+    \item $r_{i,j} \quad i \in \mathcal{R}, j \in \mathcal{P}$ --- How many of resource $i$ went into production line $j$.
+    \item $m_{i} \quad i \in \mathcal{P}$ --- Ingredient mass given on input of production line $i$.
+    \item $w_{i, j} \quad i \in \mathcal{R}, j \in \mathcal{P}^1$ --- wastes created from resource $i$ on production line $j$
+    \item $\hat{w}_{i, j} \quad i \in \mathcal{R}, j \in \mathcal{P}^1$ --- wastes destinated to utilization.
+    \item $\overline{w}_{i, j} \quad i \in \mathcal{R}, j \in \mathcal{P}^1$ --- wastes destinated to use in creation of second class products
+    \item $p_i \quad i \in \mathcal{P}$ --- weight of product $i$ 
+\end{itemize}
+\subsubsection*{Constraints}
+\begin{itemize}
+    \item Limit on minimum and maximum of each resource $i$ to buy.
+    $$U_i \geqslant b_i \geqslant L_i$$
+    \item Division of resource $i$ into his production lines destinations.
+    $$b_i = \sum_{j \in \mathcal{P}} r_{i,j}$$
+    \item Mixing of ingredients $i \in \mathcal{P}^1$ in first class production lines
+    $$m_i = \sum_{j \in \mathcal{R}} r_{j,i}$$
+    \item Mixing of ingredients $i \in \mathcal{P}^2$ in second class production lines
+    $$m_i = r_{i-2, i} + \sum_{j \in \mathcal{R}}\overline{w}_{j, i-2}$$
+    \item Division of wastes from resource $i$ during production $j$ to utilization and later usage.
+    $$w_{i,j} = \hat{w}_{i,j} + \overline{w}_{i,j}$$
+    \item Usage of resource $i$ in production line $j$ is not smaller in mix than certain value from task.
+    $$r_{i,j} \geqslant M^{\geqslant}_{i,j} \cdot m_{j}$$
+    \item Usage of resource $i$ in production line $j$ is not bigger in mix than certain value from task.
+    $$r_{i,j} \leqslant M^{\leqslant}_{i,j} \cdot m_{j}$$
+    \item Production of first class products $i \in \mathcal{P}^1$ produces product and waste 
+    $$m_{i} = p_i + \sum_{j\in \mathcal{R}} w_{j,i}$$
+    \item Factor of waste produced by resource $i$ during production of first class products $j \in \mathcal{P}^1$ is given by $W_{i,j}$.
+    $$w_{i,j} = r_{i,j} \cdot W_{i,j}$$
+    \item During creation second class products $i \in \mathcal{P}^2$, mix is equivalent to product.
+    $$p_i = m_i$$
+    
+\end{itemize}
+\subsubsection*{Objective Function}
+\begin{itemize}
+    \item $\textrm{sell} := \sum_{i \in \mathcal{P}} p_i \cdot P_i $
+    \item $\textrm{product cost} := \sum_{i \in \mathcal{R}} b_i \cdot C_i $
+    \item $\textrm{utilization} := \sum_{i \in \mathcal{R}, j \in \mathcal{P}^1} \hat{w}\cdot Wc_{i,j}$
+\end{itemize}
+$$\textrm{Maximize profit: } \quad \textrm{sell} - \textrm{product cost} - \textrm{utilization}$$
+
+
+\subsection{Sources}
+Solution in \texttt{GNU MathProg} can be found in \textit{src/ex3/model.mod} and \textit{src/ex3/data.dat} .
+
+\subsection{Answers to questions}
+\subsubsection*{How many resources $R_1$, $R_2$, $R_3$ should factory buy?}
+According to \textit{glpsol}, factory should buy
+\begin{table}[H]
+    \centering
+    \begin{tabular}{cc}
+    Resource 1 & 6000kg \\ \hline
+    Resource 2 & 5000kg \\ \hline
+    Resource 3 & 4000kg
+    \end{tabular}
+\end{table}
+\subsubsection*{How many resources should be used to what product in kilograms?}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l|cccc}
+        & Product 1 & Product 2 & Product 3 & Product 4 \\ \hline
+    Resource 1 & 1175     & 4725      & 99        & 0         \\
+    Resource 2 & 940       & 4060      & 0         & 0         \\
+    Resource 3 & 235       & 3765      & 0         & 0        
+    \end{tabular}
+
+\end{table}
+\subsubsection*{How many waste should be utilized and how many should go towards production of $C$ and $D$?}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|cc}
+        & Product 1 & Product 2 \\ \hline
+    Resource 1 & 117       & 0         \\
+    Resource 2 & 188       & 0         \\
+    Resource 3 & 94        & 0        
+    \end{tabular}
+    \caption{Wastes that were used in creation of products 3 and 4}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|cc}
+        & Product 1 & Product 2 \\ \hline
+    Resource 1 & 0       & 945         \\
+    Resource 2 & 0       & 812       \\
+    Resource 3 & 0        & 1882      
+    \end{tabular}
+    \caption{Wastes that were utilized}
+\end{table}

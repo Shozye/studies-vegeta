@@ -3,14 +3,59 @@ One of the tests for precision and resistance of LP algorithms is the following 
 \begin{center}
     min $\textbf{c}^T \textbf{x}$ 
     $$A\textbf{x} = \textbf{b}\textrm{,}\quad \textbf{x} \geqslant \textbf{0}$$
-    $$A_{ij} = \frac{1}{i+j-1}\textrm{,}\quad i, j = 1,\dots,n$$ 
+    $$A_{i,j} = \frac{1}{i+j-1}\textrm{,}\quad i, j = 1,\dots,n$$ 
     $$c_i = b_i = \sum_{j=1}^{n} \frac{1}{i+j-1}\textrm{,}\quad i=1,\dots,n$$
 \end{center}
 It's solution should be $\textbf{x} = \textbf{1}$. Problem is \textit{ill-conditioned} due to $A$ being Hilbert's Matrix.
 \begin{enumerate}
-    \item Describe problem in \texttt{GNU MathProg} and solve it in \texttt{glpsol} \notdone
-    \item Use \texttt{glpsol} to find $n$ for which there is 2-digit precision. \notdone
-    \item Print relative error $||x-\bar{x}||_2 / ||x||_2$ for every $n$. $\bar{x}$ is computed $x$ \notdone
-    \item Generalize the solution by separating model and data. Maximally parametrize model description \notdone
+    \item Describe problem in \texttt{GNU MathProg} and solve it in \texttt{glpsol} \done
+    \item Use \texttt{glpsol} to find $n$ for which there is 2-digit precision. \done
+    \item Print relative error $||x-\bar{x}||_2 / ||x||_2$ for every $n$. $\bar{x}$ is computed $x$ \done
+    \item Generalize the solution by separating model and data. Maximally parametrize model description \done
     \item * Solve it with all \texttt{clp}, \texttt{HiGHS}, \texttt{GLPK} \neverdone
 \end{enumerate}
+
+\subsection{Model}
+\subsubsection*{Parameters}
+\begin{itemize}
+    \item $n$ --- size of Matrix $A$
+    \item $A_{i,j}$\textrm{,} $c_i$\textrm{,} $b_i $ as described above
+\end{itemize}
+\subsubsection*{Decision Variables}
+\begin{itemize}
+    \item $x$ --- vector of size $n$
+\end{itemize}
+\subsubsection*{Constraints}
+\begin{itemize}
+    \item $Ax = b$ --- $\forall i \in [n] \quad b_i = \sum_{j \in [n]} A_{i,j} \cdot x_j$
+    \item $x_i \geqslant 0$
+\end{itemize}
+\subsubsection*{Objective Function}
+\begin{itemize}
+    \item  $ c^T \cdot x $ --- $\sum_{i \in [n]} c_i \cdot x_i$
+\end{itemize}
+\subsection{Sources}
+Solution in \texttt{GNU MathProg} can be found in \textit{src/ex1/model.mod} and \textit{src/ex1/data.dat} .
+\subsection{Precision for given n}
+Following table presents relative error of the problem solving depending on $n$
+As we can see, at $n = 8$, solution loses it's precision.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccc}
+    n  & error & solution \\ \hline
+    2  & 1.05e-15  & (1.00, 1.00)        \\ \hline
+    3  & 3.67e-15  & (1.00, 1.00, 1.00)        \\ \hline
+    4  & 3.27e-13  & (1.00, 1.00, 1.00, 1.00)       \\ \hline
+    5  & 3.35e-12  & (1.00, 1.00, 1.00, 1.00, 1.00)        \\ \hline
+    6  & 6.83e-11  & (1.00, 1.00, 1.00, 1.00, 1.00, 1.00)        \\ \hline
+    7  & 1.67e-8  & (1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00)        \\ \hline
+    8  & 0.51  & (1.00, 0.99, 1.05, 0.74, 1.70, 0, 1.72, 0.80)        \\ \hline
+    9  & 0.68  & (1.00, 1.01, 0.93, 1.38, 0.00, 2.40, 0.00, 1.30, 0.99)        \\ \hline
+    10 & 0.99  & (1.00, 0.98, 1.18, 0.21, 2.56, 0.00, 0.00, 2.93, 0.00, 1.15)      
+    \end{tabular}
+    \end{table}
+
+
+
+
+

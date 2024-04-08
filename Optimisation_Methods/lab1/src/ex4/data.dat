@@ -1,0 +1,49 @@
+data;
+
+set ScheduleHours := 0  1  2  3  4  5  6  7  8  9 10
+                       11 12 13 14 15 16 17 18 19 20 
+                       21 22 23 24 25 26 27 28 29 30 
+                       31 32 33 34 35 36 37 38 39 40 
+                       41 42 43 44 45 46 47 48;
+
+set Days := 1 2 3 4 5;
+
+set Subjects := 1 2 3 4 5;
+set GroupSubjectIndexes := 1 2 3 4;
+set Activities := LMon LTue LWed LThu LFri Sport;
+set GroupActivityIndexes := 1 2 3;
+
+param GroupsStartHours :    A   B   C   D   E :=
+                        1   26  26  16  16  18
+                        2   20  20  20  16  21
+                        3   20  22  30  26  22
+                        4   22  16  34  26  26;
+
+param GroupsStartDays :     A   B   C   D   E :=
+                        1   1   1   2   1   1
+                        2   2   2   2   1   1
+                        3   3   3   4   4   5
+                        4   3   4   4   5   5;
+
+param GroupTime := A 4 B 4 C 6 D 4 E 3;
+
+param ActivityStartHours :  LMon    LTue    LWed    LThu    LFri    Sport :=
+                        1   24      24      24      24      24      26
+                        2   25      25      25      25      25      22
+                        3   26      26      26      26      26      26;
+
+param ActivityStartDays :   LMon    LTue    LWed    LThu    LFri    Sport :=
+                        1   1       2       3       4       5       1
+                        2   1       2       3       4       5       3
+                        3   1       2       3       4       5       3;
+
+
+param ActivityTime := LMon 2 LTue 2 LWed 2 LThu 2 LFri 2 Sport 4;
+
+param Preferences :     A   B   C   D   E :=
+                    1   5   4   3   10  0
+                    2   4   4   5   10  5
+                    3   10  5   7    7  3
+                    4   5   6   8    5  4;
+
+end;
