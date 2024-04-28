@@ -1,0 +1,57 @@
+\section{Exercise}
+We want to acquire $m$ samples from $n$ servers. 
+Samples are stored on several servers (based on matrix $q$) and one sample can be stored on several of them.
+Reaching a server has cost given by sequence $T$.
+Goal is to find these places that should be reached.
+
+\begin{enumerate}
+    \item Formulate the problem as Mixed-Integer Programming. \done
+    \item Describe it in \texttt{JuMP} and solve it by using \texttt{GLPK} or \texttt{Cbc}. 
+    \item Separate model and data.
+    \item Maximally parametrize model description.
+\end{enumerate}
+
+\subsection{What's Interesting about the problem?}
+We can model this problem as a following graph problem. 
+\begin{enumerate}
+    \item Graph $G$ was created by first being a bipartite graph with costs of edges as $0$. 
+    \item Then colour the vertices depending on the part they are as red or blue. 
+    \item Then add a vertex $s$ with edges connecting to all blue vertices. Cost of edges based on $T$
+    \item Given graph $G$, find the minimal cost of reaching out to $m$ red vertices in total.
+\end{enumerate}
+We can as well reduce it to some kind of minimum-cost flow problem by adding a vertex $e$ connected to all red edges. 
+This vertice will be a sink.
+
+\subsection{Model}
+\subsubsection*{Parameters}
+\begin{itemize}
+    \item $s$ --- source vertex
+    \item $\mathcal{B}$ --- Part of blue vertices. $s$ is connected to all of them.
+    \item $\mathcal{R}$ --- Part of red vertices. $e$ is connected to all of them.
+    \item $q_{b,r}$ --- Matrix of connections between $b \in \mathcal{B}$ and $r \in \mathcal{R}$. 
+    \item $T_b$ --- Cost of edge $(s, b)$ for $b \in \mathcal{B}$
+    \item $n$ --- $|\mathcal{B}|$
+    \item $m$ --- $|\mathcal{R}|$
+\end{itemize}
+\subsubsection*{Decision Variables}
+\begin{itemize}
+    \item $x_b$ --- How much flow are we sending from $s$ to $b \in \mathcal{B}$
+    \item $c_{b,r}$ --- How much flow are we sending from $b \in \mathcal{B}$ and $r \in \mathcal{R}$. 
+\end{itemize}
+\subsubsection*{Constraints}
+\begin{itemize}
+    \item We want to know $m$ data samples.
+    $$\sum_{b \in \mathcal{B}} x_b = m$$
+    \item For any $r \in \mathcal{R}$, $r$ was reached from source
+    $$\sum_{b \in \mathcal{B}} c_{b,r} = 1$$
+    \item Reaching out to data sample $r \in \mathcal{R}$ from server $b \in \mathcal{B}$ is done by sending $1$ unit.
+    $$c_{b,r} \textrm{ is binary}$$
+\end{itemize}
+\subsubsection*{Objective Function}
+We want to minimize cost of reaching out to servers. So it will be 
+$$
+\sum_{b \in \mathcal{B}}  || x_b > 0 || \cdot T_b
+$$
+\subsection{Sources}
+Solution in \texttt{Julia} can be found in 
+

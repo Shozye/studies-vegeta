@@ -1,0 +1,52 @@
+\section{Exercise}
+There is a set of tasks $Z = \{1, \dots , n\}$, 
+that are meant to be executes on processors $P_1, P_2, P_3$ with following assumptions.
+\begin{enumerate}
+    \item One processor can execute one task at a time
+    \item Every task needs to me done first by $P_1$, then on $P_2$, then on $P_3$.
+    \item Order of tasks on any processor must be the same the same.
+\end{enumerate}
+You are given time of execution of task $i$ for processor $j$ by $t^j_i$,
+goal is to find such permutation of tasks that will minimize total time when all tasks will be done on $P_3$
+\begin{enumerate}
+    \item Find such permutation of tasks that will minimize total time when all tasks will be done on $P_3$ \notdone
+    \item Describe such model in \texttt{JuMP} ( \texttt{Julia} ) and solve instance of a problem by \texttt{GLPK} or \texttt{Cbc} \notdone
+    \item Parametrize model description, in particular, for $m$ processors. \notdone  
+    \item Visualize solution in console by using Gantt Diagram \notdone
+\end{enumerate}
+
+\subsection{What's Interesting about the problem?}
+I guess the problem's quite boring, because the execution order cannot change. I feel like it trivializes the problem and makes it much easier. 
+Especially that I cannot find reduction from the problem without the third rule.
+
+\subsection{Model}
+\subsubsection*{Parameters}
+\begin{itemize}
+    \item $Z$ --- Set of tasks $Z = \{1, \dots , n\}$
+    \item $M$ --- Amount of processors $P_i$
+    \item $T^j_i$ --- Time of execution of task $i$ on processor $j$
+\end{itemize}
+\subsubsection*{Decision Variables}
+\begin{itemize}
+    \item $s^j_i$ --- Start time of execution of task $i$ on processor $j$
+    \item $\pi$ --- permutation of $Z$
+\end{itemize}
+\subsubsection*{Constraints}
+\begin{itemize}
+    \item $\pi$ is a permutation of elements from $Z$ so 
+    $$\pi_i \textrm{ is integer}$$
+    $$1 \leqslant \pi_i \leqslant n $$
+    $$i \neq j \implies \pi_i \neq \pi_j$$
+    
+    \item If $i < j$, $P_i$ should finish task $x$ before $P_j$ starts this task.
+    $$s_{x}^i + t_{x}^i \leqslant s_{x}^j$$
+    \item One processor $p$, can execute one task at a time and if $i < j$, it should finish task $\pi_i$ before task $\pi_j$. This rule also ensures same order of tasks
+    $$s_{\pi_i}^p + t_{\pi_i}^p \leqslant s_{\pi_j}^p$$
+    
+\end{itemize}
+\subsubsection*{Objective Function}
+We need to minimize finish time of the last task on the last processor.
+$$\textrm{Minimize } s_{\pi_n}^M + t_{\pi_n}^M$$
+\subsection{Sources}
+Solution in \texttt{Julia} can be found in \textit{src/ex3/} and \textit{src/ex3/} .
+
