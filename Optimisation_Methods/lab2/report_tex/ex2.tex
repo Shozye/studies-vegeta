@@ -1,37 +1,43 @@
-\section{Exercise}
-$P_{i,j}$ is a program, that takes $r_{i,j}$ space and $t_{i,j}$ time. In these, $i \in [m]$, $j \in [n]$.
-You need to create a sequential program $P$ that calculates 
+\section{Exercise - Program Calculating Functions}
+$P_{i,j}$ is a subprogram, that takes $r_{i,j}$ space and $t_{i,j}$ time and it calculates function $i$.
+Construct a program, that will be able to calculate all functions, will take no more than $M$ space and will have minimal time.
 
-tl;dr I don't understand what's going on. When does a program P gets calculated? Only sequential? WTF
-
-\begin{comment}
     
 \begin{enumerate}
-    \item \done
-    \item \done
-    \item \done
-    \item \done
-    \item \neverdone
+    \item Formulate the problem as Mixed-Integer Programming. \done
+    \item Describe it in \texttt{JuMP} and solve it by using \texttt{GLPK} or \texttt{Cbc}. \done
+    \item Separate model and data. \done
+    \item Maximally parametrize model description. \done
 \end{enumerate}
 
 \subsection{Model}
 \subsubsection*{Parameters}
 \begin{itemize}
-    \item 
+    \item $m$ --- Amount of subprograms for every function
+    \item $n$ --- Amount of functions
+    \item $M$ --- Total memory available
+    \item $r_{i,j}$ --- Memory taken by function $i$ and its subprogram $j$
+    \item $t_{i,j}$ --- Time taken by function $i$ and its subprogram $j$
 \end{itemize}
 \subsubsection*{Decision Variables}
 \begin{itemize}
-    \item 
+    \item $x_{i,j}$ --- Was function $i$ calculated with subprogram $j$?
 \end{itemize}
 \subsubsection*{Constraints}
 \begin{itemize}
-    \item 
+    \item $x_{i,j}$ answers a question, so it is a binary.
+    $$x_{i,j} \textrm{ is a binary }$$
+    \item Every function $i \in 1 \dots n$ must be calculated
+    $$\sum_{j \in 1 \dots m} x_{i,j} \geqslant 1$$
+    \item Total memory taken by subprograms is limited by $M$
+    $$\sum_{i \in 1 \dots n, j \in 1 \dots m}  x_{i,j} \cdot r_{i,j} \leqslant M $$
 \end{itemize}
 \subsubsection*{Objective Function}
-\begin{itemize}
-    \item 
-\end{itemize}
+Goal is to minimize time taken by whole program
+$$
+\textrm{Minimize } \sum_{i \in 1 \dots n, j \in 1 \dots m}  x_{i,j} \cdot t_{i,j}
+$$
 \subsection{Sources}
-Solution in 
+Solution in \texttt{Julia} can be found in \textit{src/ex2.jl}
 
-\end{comment}
+

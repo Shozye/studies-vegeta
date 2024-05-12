@@ -1,0 +1,56 @@
+\section{Exercise - Same Order Scheduling - Done in a wrong way}
+There is a set of tasks $Z = \{1, \dots , n\}$, 
+that are meant to be executes on processors $P_1, P_2, P_3$ with following assumptions.
+\begin{enumerate}
+    \item One processor can execute one task at a time
+    \item Every task needs to me done first by $P_1$, then on $P_2$, then on $P_3$.
+    \item Order of tasks on any processor must be the same the same.
+\end{enumerate}
+You are given time of execution of task $i$ for processor $j$ by $t^j_i$,
+goal is to find such permutation of tasks that will minimize total time when all tasks will be done on $P_3$
+\begin{enumerate}
+    \item Find such permutation of tasks that will minimize total time when all tasks will be done on $P_3$ \notdone
+    \item Describe such model in \texttt{JuMP} ( \texttt{Julia} ) and solve instance of a problem by \texttt{GLPK} or \texttt{Cbc} \notdone
+    \item Parametrize model description, in particular, for $m$ processors. \notdone  
+    \item Visualize solution in console by using Gantt Diagram \notdone
+\end{enumerate}
+
+\subsection{What's Interesting about the problem?}
+I guess the problem's quite boring, because the execution order cannot change. I feel like it trivializes the problem and makes it much easier. 
+Especially that I cannot find reduction from the problem without the third rule. That is interesting in its own way.
+
+\subsection{Model}
+\subsubsection*{Parameters}
+\begin{itemize}
+    \item $Z$ --- Set of tasks $Z = \{1, \dots , n\}$
+    \item $M$ --- Amount of processors $P_i$
+    \item $T_{i, j}$ --- execution time of task $i$ on processor $j$
+\end{itemize}
+\subsubsection*{Decision Variables}
+\begin{itemize}
+    \item $s_{i, j}$ --- Execution start time of task $i$ on processor $j$
+    \item $\pi$ --- permutation of $Z$. Actually a binary matrix of tasks, which says if task $i$ is right before task $j$.
+\end{itemize}
+\subsubsection*{Constraints}
+\begin{itemize}
+    \item $\pi$ is a permutation of $Z$, so $\pi_{i,j} = 1 \iff i$ is right before $j$ in permutation
+    $$\pi_{i,j} \textrm{ is binary }$$
+    $$\forall_{i \in Z} \sum_{j \in Z} \pi_{i, j} \leqslant 1$$
+    $$\sum_{i \in Z, j \in Z} \pi_{i, j} = n - 1$$
+    \item Every task $i$ had to start at every processor $j$. It is sufficient to check only on first processor.
+    $$ s_{i, 1} \geqslant 0$$
+    \item If $i < j$, $P_i$ should finish task $x$ before $P_j$ starts this task.
+    $$s_{x, i} + t_{x, i} \leqslant s_{x, j}$$
+    \item One processor $p$, can execute one task at a time. 
+    If $i$ is right before $j$ in permutation, then $i$ should finish executing.
+    $$s_{i, p} + t_{i, p} \leqslant s_{next(i), p}$$
+    We can figure out $s_{next(i), p}$ by
+    $$s_{next(i), p} = \sum_{j \in Z} \pi_{i,j} \cdot s_{j,p}$$
+    
+\end{itemize}
+\subsubsection*{Objective Function}
+We need to minimize finish time of the last task on the last processor.
+$$\textrm{Minimize } \max_{i \in Z}{s_{i, M} + t_{i, M}}$$
+\subsection{Sources}
+Solution in \texttt{Julia} can be found in \textit{src/ex3.jl/}.
+

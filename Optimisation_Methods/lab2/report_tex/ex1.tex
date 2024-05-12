@@ -1,33 +1,28 @@
-\section{Exercise}
-We want to acquire $m$ samples from $n$ servers. 
-Samples are stored on several servers (based on matrix $q$) and one sample can be stored on several of them.
-Reaching a server has cost given by sequence $T$.
-Goal is to find these places that should be reached.
+\section{Exercise - Samples and Servers}
+There are $m$ samples and $n$ servers.
+Samples are stored on servers, one sample can be stored on several of them.
+There is cost $T_i$ associated with reaching to server $i$.
+Goal is to reach to all the samples with the smallest possible cost.
 
 \begin{enumerate}
     \item Formulate the problem as Mixed-Integer Programming. \done
-    \item Describe it in \texttt{JuMP} and solve it by using \texttt{GLPK} or \texttt{Cbc}. 
-    \item Separate model and data.
-    \item Maximally parametrize model description.
+    \item Describe it in \texttt{JuMP} and solve it by using \texttt{GLPK} or \texttt{Cbc}. \done
+    \item Separate model and data. \done
+    \item Maximally parametrize model description. \done
 \end{enumerate}
 
 \subsection{What's Interesting about the problem?}
-We can model this problem as a following graph problem. 
-\begin{enumerate}
-    \item Graph $G$ was created by first being a bipartite graph with costs of edges as $0$. 
-    \item Then colour the vertices depending on the part they are as red or blue. 
-    \item Then add a vertex $s$ with edges connecting to all blue vertices. Cost of edges based on $T$
-    \item Given graph $G$, find the minimal cost of reaching out to $m$ red vertices in total.
-\end{enumerate}
-We can as well reduce it to some kind of minimum-cost flow problem by adding a vertex $e$ connected to all red edges. 
-This vertice will be a sink.
+I have tried to model it as Minimum Flow Problem, 
+but I cannot create IF statement in constraints in Julia.
+Are these essentialy different problems?
 
 \subsection{Model}
+I am essentially imagining it as one of bipartite graph problems. Given graph, and it's two parts $\mathcal{B}, \mathcal{R}$,
+Find lowest cost set $S \subseteq \mathcal{B}$ such as $\mathcal{R} \subseteq N(S)$, where $N(S)$ is neighbourhood.
 \subsubsection*{Parameters}
 \begin{itemize}
-    \item $s$ --- source vertex
-    \item $\mathcal{B}$ --- Part of blue vertices. $s$ is connected to all of them.
-    \item $\mathcal{R}$ --- Part of red vertices. $e$ is connected to all of them.
+    \item $\mathcal{B}$ --- Part of blue vertices.
+    \item $\mathcal{R}$ --- Part of red vertices.
     \item $q_{b,r}$ --- Matrix of connections between $b \in \mathcal{B}$ and $r \in \mathcal{R}$. 
     \item $T_b$ --- Cost of edge $(s, b)$ for $b \in \mathcal{B}$
     \item $n$ --- $|\mathcal{B}|$
@@ -35,23 +30,21 @@ This vertice will be a sink.
 \end{itemize}
 \subsubsection*{Decision Variables}
 \begin{itemize}
-    \item $x_b$ --- How much flow are we sending from $s$ to $b \in \mathcal{B}$
-    \item $c_{b,r}$ --- How much flow are we sending from $b \in \mathcal{B}$ and $r \in \mathcal{R}$. 
+    \item $x_b$ --- Is $b$ in $S$? $b \in \mathcal{B}$ ? 
 \end{itemize}
 \subsubsection*{Constraints}
 \begin{itemize}
-    \item We want to know $m$ data samples.
-    $$\sum_{b \in \mathcal{B}} x_b = m$$
-    \item For any $r \in \mathcal{R}$, $r$ was reached from source
-    $$\sum_{b \in \mathcal{B}} c_{b,r} = 1$$
-    \item Reaching out to data sample $r \in \mathcal{R}$ from server $b \in \mathcal{B}$ is done by sending $1$ unit.
-    $$c_{b,r} \textrm{ is binary}$$
+    \item $x_b$ answers question, if something is, so it is binary variable.
+    $$x_b\textrm{ is binary} $$
+    \item Every red vertex $r$ has connection to blue vertice $b$ that is in $S$
+    
+    $$\forall_{r \in \mathcal{R}} \mathrm{ } \sum_{b \in \mathcal{B} } q_{b, r} \cdot x_b \geqslant 1 $$
 \end{itemize}
 \subsubsection*{Objective Function}
-We want to minimize cost of reaching out to servers. So it will be 
+We want to minimize cost of set $S$.
 $$
-\sum_{b \in \mathcal{B}}  || x_b > 0 || \cdot T_b
+\textrm{Minimize } \sum_{b \in \mathcal{B}}  x_b \cdot T_b
 $$
 \subsection{Sources}
-Solution in \texttt{Julia} can be found in 
+Solution in \texttt{Julia} can be found in  \textit{src/ex1.jl}
 

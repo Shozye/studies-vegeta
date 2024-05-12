@@ -1,31 +1,55 @@
 \section{Exercise}
+You are given set $\mathcal{R}$ of resources available to you. Resources are called $R_i$ for $i \in 1,\dots , p$.
+You are also given limit $\mathcal{L}_i$ of resource $R_i$. At any time, you cannot allot more than $L_i$ units of $R_i$ to activities.
+You are given set of activities $\mathcal{Z} = \{1,\dots ,n\}$. 
+Every activity $A_j \in \mathcal{A}$ takes $t_j$ units of time to do and vector $\mathbf{r}_j = [r_1, r_2, \dots, r_p]$ of needed resources $R_1, \dots , R_p$
+Activities must be done in certain order, that is given by a directed graph. If there is an edge $(A_i, A_j)$ in graph $G$, then $A_i$ must be done before $A_j$
+
+
 \begin{enumerate}
-    \item \done
-    \item \done
-    \item \done
-    \item \done
-    \item \neverdone
+    \item Find schedule that minimizes total time needed to execute all activities\notdone
+    \item Formulate the problem as Mixed Integer Programming problem\notdone
+    \item Describe the model in \texttt{Julia} \texttt{JuMP} and solve instance of the problem with \texttt{GLPK}\notdone
+    \item Visualize solution in console by using Gantt Diagram \notdone
 \end{enumerate}
 
 \subsection{Model}
 \subsubsection*{Parameters}
 \begin{itemize}
-    \item $n$ --- size of Matrix $A$
-    \item $A_{i,j}$\textrm{,} $c_i$\textrm{,} $b_i $ as described above
+    \item $n$ --- Amount of activities $\mathcal{A}$
+    \item $p$ --- Amount of resources $\mathcal{R}$
+    \item $\mathcal{A}$ --- Activities to do
+    \item $\mathcal{R}$ --- Resources to use
+    \item $\mathcal{L}_i$ --- Limit set on resource $\mathcal{R}_i$
+    \item $\mathbf{r}$ --- Matrix $n \times p$ of resource usage for given activity
+    \item $t_j$ --- Time needed to finish activity $t_j$
+    \item $G$ --- Graph representation as a set of tuples $(v,w)$. $(v,w) \in G \implies v $ needs to be done before $w$  
 \end{itemize}
 \subsubsection*{Decision Variables}
 \begin{itemize}
-    \item $x$ --- vector of size $n$
+    \item $x_i$ --- start time of activity $A_i$
 \end{itemize}
 \subsubsection*{Constraints}
 \begin{itemize}
-    \item $Ax = b$ --- $\forall i \in [n] \quad b_i = \sum_{j \in [n]} A_{i,j} \cdot x_j$
-    \item $x_i \geqslant 0$
+    \item Every activity has started (and finished) at some point 
+    $$x_i \geqslant 0$$
+    \item For every edge $(v,w) \in G$, Activity $v$ must be done before $w$
+    $$\forall (v,w) \in G : x_v + t_v \leqslant x_w$$
+    \item At any point, sum of resource $R_i$ used at that moment cannot be more than $L_i$. It is sufficient to check if start of any activity is eligible.
+    $$ A_i \textrm{ started during execution of } A_j \iff x_j \leq x_i \leq x_j + t_j$$
+    
+    $$
+    \forall \mathcal{R}_r \in \mathcal{R} : 
+        \forall A_i \in \mathcal{A} : 
+            \textbf{r}_{i, r} + 
+            \sum_{A_j \in \mathcal{A}, j \neq i}
+                ( ||A_i \textrm{ started during execution of } A_j|| \cdot \textbf{r}_{j, r} ) \leq \mathcal{L}_r 
+    $$
+
 \end{itemize}
 \subsubsection*{Objective Function}
-\begin{itemize}
-    \item  $ c^T \cdot x $ --- $\sum_{i \in [n]} c_i \cdot x_i$
-\end{itemize}
+Minimize total time needed to finish all activities
+$$\textrm{Minimize } \max\{ x_i + t_i : i \in 1 \dots n \}$$
 \subsection{Sources}
 Solution in \texttt{GNU MathProg} can be found in \textit{src/ex1/model.mod} and \textit{src/ex1/data.dat} .
 
