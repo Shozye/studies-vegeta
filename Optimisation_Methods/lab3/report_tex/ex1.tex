@@ -1,0 +1,282 @@
+% Mateusz Pełechaty
+\section{Exercise - Generalized Assignment Problem}
+Implement Approximation algorithm based on linear programming to \textit{Generalized Assignment Problem}.
+It should be based on the book \url{http://www.contrib.andrew.cmu.edu/~ravi/book.pdf} (section 3.2).
+
+\begin{enumerate}
+    \item Implement  Algorithm using LP in \texttt{JuMP} \notdone
+    \item Test on significant portion of the data from \href{https://people.brunel.ac.uk/~mastjjb/jeb/info.html}{OR-Library} \done
+\end{enumerate}
+
+\subsection{What is in the book?}
+\begin{enumerate}
+    \item Generalized Assignment Problem definition
+    \item Modelling Generalized Assignment as Bipartite Graph
+    \item GA model in Linear Programming (non-integer)
+    \item Iterative Generalized Assignment Algorithm
+    \item Proofs of correctness and Performance Guarantee
+\end{enumerate}
+
+\subsection{Problem definition}
+Given set of jobs $J$ and machines $M$. Machine $m \in M$ is available for $T_m$ time.
+For each job $j \in J$ there is processing time $p_{j,m}$ and cost $c_{j,m}$
+Goal is to assign each job to some machine such that the total cost is minimized and no machine is scheduled for more than its available time.
+
+
+\subsection{LP Model}
+In the book, we are modelling GA as bipartite matching problem with the parts $J$ and $M$.
+Weight of edge $(i,j)$ is $c_{ij}$. This is also relaxed version of the problem and we allow non-integer assignments. 
+Worth noting is the fact that time constraint on the machines is set on $M' \subseteq M$ which will be further described in iterative algorithm. 
+\begin{equation*}
+    \begin{aligned}
+        \textrm{minimize} \quad &  \sum_{e=(i,j) \in E} c_{ij} x_{ij} &\\
+        \textrm{subject to} \quad &  \sum_{e \in \delta(j)} x_e = 1 & \forall j \in J\\
+        & \sum_{e \in \delta(i)} p_e x_e \leqslant T_i & \forall i \in M'\\
+        & x_e \geqslant 0 & \forall e \in E
+    \end{aligned}
+\end{equation*}
+
+\subsection{Iterative Algorithm}
+Let $C$ be optimal cost of the solution. Procedure described in the book (3.2.3) returns an assignment of at most $C$, but uses each machine $i$ for at most $2T_i$ time units.
+\begin{algorithm}
+    \caption{Iterative Generalized Assignment Algorithm}
+    \begin{algorithmic}[1]
+    \STATE \textbf{Initialization:} $E(F) \leftarrow \emptyset$, $M' \leftarrow M$
+    \WHILE{$J \neq \emptyset$}
+        \STATE Find an optimal extreme point solution $x$ to LP\textsubscript{ga}
+        \STATE remove every variable with $x_{ij} = 0$
+        \FOR{every $(i,j)$ such as $x_{ij} = 1$}
+            \STATE  $F \leftarrow F \cup \{ij\}$
+            \STATE  $J \leftarrow J \setminus \{j\}$
+            \STATE  $T_i \leftarrow T_i - p_{ij}$
+        \ENDFOR
+        \FOR{every machine $i$}
+            \IF{$d(i) = 1$ or $(d(i) = 2 \textrm{ and } \sum_{j \in J} x_{ij} \geq 1$)}
+                \STATE Update $M' \leftarrow M' \setminus \{i\}$
+            \ENDIF
+        \ENDFOR
+    \ENDWHILE
+    \RETURN $F$
+    \end{algorithmic}
+    \end{algorithm}
+
+\subsection{Experimental Tests}
+Tests were performed on every Generalized Assignment data from \href{https://people.brunel.ac.uk/~mastjjb/jeb/info.html}{OR-Library}. 
+For every problem described there, Approximation Algorithm returned value that was at most optimal value and with max ratio smaller than 2. 
+
+
+\begin{table}[]
+    \caption{Tests on file gap1.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.3684 & 188 & 336 & 0.5595\\ \hline
+2 & 1.2708 & 212 & 327 & 0.6483\\ \hline
+3 & 1.7045 & 194 & 339 & 0.5723\\ \hline
+4 & 1.2778 & 201 & 341 & 0.5894\\ \hline
+5 & 1.6471 & 213 & 326 & 0.6534\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+    \begin{table}[]
+    \caption{Tests on file gap2.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.1667 & 268 & 434 & 0.6175\\ \hline
+2 & 1.2391 & 247 & 436 & 0.5665\\ \hline
+3 & 1.1556 & 243 & 420 & 0.5786\\ \hline
+4 & 1.2692 & 293 & 419 & 0.6993\\ \hline
+5 & 1.3111 & 245 & 428 & 0.5724\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+    \begin{table}[]
+    \caption{Tests on file gap3.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.1562 & 310 & 580 & 0.5345\\ \hline
+2 & 1.5849 & 299 & 564 & 0.5301\\ \hline
+3 & 1.1964 & 313 & 573 & 0.5462\\ \hline
+4 & 1.1719 & 312 & 570 & 0.5474\\ \hline
+5 & 1.375 & 316 & 564 & 0.5603\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+    \begin{table}[]
+    \caption{Tests on file gap4.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.2222 & 360 & 656 & 0.5488\\ \hline
+2 & 1.2097 & 380 & 644 & 0.5901\\ \hline
+3 & 1.2179 & 389 & 673 & 0.578\\ \hline
+4 & 1.2895 & 378 & 647 & 0.5842\\ \hline
+5 & 1.2 & 388 & 664 & 0.5843\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+    \begin{table}[]
+    \caption{Tests on file gap5.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.4857 & 307 & 563 & 0.5453\\ \hline
+2 & 1.325 & 285 & 558 & 0.5108\\ \hline
+3 & 1.5714 & 275 & 564 & 0.4876\\ \hline
+4 & 1.4688 & 280 & 568 & 0.493\\ \hline
+5 & 1.3939 & 303 & 559 & 0.542\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+    \begin{table}[]
+    \caption{Tests on file gap6.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.3556 & 393 & 761 & 0.5164\\ \hline
+2 & 1.2449 & 406 & 759 & 0.5349\\ \hline
+3 & 1.4444 & 392 & 758 & 0.5172\\ \hline
+4 & 1.6341 & 385 & 752 & 0.512\\ \hline
+5 & 1.46 & 425 & 747 & 0.5689\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+    \begin{table}[]
+    \caption{Tests on file gap7.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.5079 & 484 & 942 & 0.5138\\ \hline
+2 & 1.4643 & 486 & 949 & 0.5121\\ \hline
+3 & 1.2982 & 493 & 968 & 0.5093\\ \hline
+4 & 1.2931 & 508 & 945 & 0.5376\\ \hline
+5 & 1.2759 & 485 & 951 & 0.51\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+    \begin{table}[]
+    \caption{Tests on file gap8.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.1923 & 411 & 1133 & 0.3628\\ \hline
+2 & 1.1458 & 404 & 1134 & 0.3563\\ \hline
+3 & 1.3061 & 414 & 1141 & 0.3628\\ \hline
+4 & 1.4375 & 397 & 1117 & 0.3554\\ \hline
+5 & 1.2105 & 424 & 1127 & 0.3762\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+    \begin{table}[]
+    \caption{Tests on file gap9.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.25 & 357 & 709 & 0.5035\\ \hline
+2 & 1.4828 & 374 & 717 & 0.5216\\ \hline
+3 & 1.6129 & 395 & 712 & 0.5548\\ \hline
+4 & 1.4615 & 375 & 723 & 0.5187\\ \hline
+5 & 1.4706 & 404 & 706 & 0.5722\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+    \begin{table}[]
+    \caption{Tests on file gap10.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.4043 & 479 & 958 & 0.5\\ \hline
+2 & 1.5814 & 503 & 963 & 0.5223\\ \hline
+3 & 1.3636 & 509 & 960 & 0.5302\\ \hline
+4 & 1.4082 & 477 & 947 & 0.5037\\ \hline
+5 & 1.1569 & 468 & 947 & 0.4942\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+    \begin{table}[]
+    \caption{Tests on file gap11.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.2787 & 665 & 1139 & 0.5838\\ \hline
+2 & 1.4545 & 648 & 1178 & 0.5501\\ \hline
+3 & 1.3506 & 665 & 1195 & 0.5565\\ \hline
+4 & 1.3143 & 698 & 1171 & 0.5961\\ \hline
+5 & 1.2273 & 626 & 1171 & 0.5346\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+    \begin{table}[]
+    \caption{Tests on file gap12.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.1795 & 752 & 1451 & 0.5183\\ \hline
+2 & 1.1806 & 724 & 1449 & 0.4997\\ \hline
+3 & 1.2424 & 761 & 1433 & 0.5311\\ \hline
+4 & 1.2714 & 728 & 1447 & 0.5031\\ \hline
+5 & 1.2778 & 769 & 1446 & 0.5318\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+    \begin{table}[]
+    \caption{Tests on file gapa.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.0556 & 1529 & --- & ---\\ \hline
+2 & 1.0253 & 2981 & --- & ---\\ \hline
+3 & 1.1406 & 1519 & --- & ---\\ \hline
+4 & 1.0164 & 2943 & --- & ---\\ \hline
+5 & 1.09 & 1472 & --- & ---\\ \hline
+6 & 1.1407 & 3029 & --- & ---\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+    \begin{table}[]
+    \caption{Tests on file gapb.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.0287 & 1051 & --- & ---\\ \hline
+2 & 1.0325 & 2475 & --- & ---\\ \hline
+3 & 1.3511 & 1335 & --- & ---\\ \hline
+4 & 1.1029 & 2471 & --- & ---\\ \hline
+5 & 1.25 & 1353 & --- & ---\\ \hline
+6 & 1.3282 & 2578 & --- & ---\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+    \begin{table}[]
+    \caption{Tests on file gapc.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.0603 & 1187 & --- & ---\\ \hline
+2 & 1.0199 & 2464 & --- & ---\\ \hline
+3 & 1.2321 & 1210 & --- & ---\\ \hline
+4 & 1.075 & 2440 & --- & ---\\ \hline
+5 & 1.3571 & 1240 & --- & ---\\ \hline
+6 & 1.1301 & 2419 & --- & ---\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+    \begin{table}[]
+    \caption{Tests on file gapd.txt}
+    \centering
+    \begin{tabular}{llllll}
+    Problem no. & Max Time Ratio & Approx Cost Val  & Opt Val & Val Ratio \\ 1 & 1.0777 & 4173 & --- & ---\\ \hline
+2 & 1.0289 & 8213 & --- & ---\\ \hline
+3 & 1.1759 & 4072 & --- & ---\\ \hline
+4 & 1.077 & 8225 & --- & ---\\ \hline
+5 & 1.4444 & 4290 & --- & ---\\ \hline
+6 & 1.2038 & 8429 & --- & ---\\ \hline
+\end{tabular}
+    \end{table}
+    
+
+\subsection{Sources}
+Solution in \texttt{Julia} can be found in  \textit{src/ex1.jl}
+
