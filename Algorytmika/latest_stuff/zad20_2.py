@@ -5,8 +5,29 @@
 # 1. Zbadaj histogram otrzymanych wartości dla kilku różnych wartości ziarna.
 # 2. Ustal dwa różne słowa a i b i przetestuj na tych słowach liczbę kolizji h_s(a) = hs(b) dla losowo wybranych 1000 wartości ziarna s
 
+import requests
+import random
+import mmh3
+
 def main():
-    pass
+    w1 = "book"
+    w2 = "pantadeusz"
+    AMOUNT_TESTS=1_000_000
+    
+    seeds = [random.randrange(1, 10_000_000) for _ in range(AMOUNT_TESTS)]
+    collisions = []
+
+    for seed in seeds:
+        h1 = mmh3.hash(w1, seed = seed)
+        h2 = mmh3.hash(w2, seed = seed)
+        if h1 == h2:
+            collisions.append(seed)
+
+    print(f"{collisions=}")
+    print(f"{len(collisions)=}")
+    
+
 
 if __name__ == "__main__":
     main()
+
