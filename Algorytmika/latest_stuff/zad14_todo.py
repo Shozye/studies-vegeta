@@ -4,3 +4,8 @@
 # oczekiwaną zrandomizowanego algorytmu służącego do wyznaczenia cięcia w grafie (V, E) rozmiaru ­
 # E/2.
 
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()

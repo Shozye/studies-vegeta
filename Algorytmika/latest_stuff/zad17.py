@@ -43,7 +43,7 @@ def main():
     # To tylko plot pokazujacy blad
     MAX_N = 10000
     xs = list(range(100, MAX_N, 100))
-    ys = [run_multiple_average(10, test, x) for x in xs]
+    ys = [run_multiple_average(100, test, x) for x in xs]
     
     plt.plot(xs, ys)
     plt.savefig("zad17_estimator.png")
