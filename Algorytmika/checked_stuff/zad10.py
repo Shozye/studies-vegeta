@@ -22,13 +22,14 @@ def longest_common_subsequence(
                 if i1 == 0 or i2 == 0 or i3 == 0:
                     dp[i1][i2][i3] = 0
                 elif s1[i1-1] == s2[i2-1] == s3[i3-1]:
-                    dp[i1][i2][i3] = dp[i1 - 1][i2 - 1][i3 - 1] + 1
+                    dp[i1][i2][i3] = dp[ i1 - 1][i2 - 1][i3 - 1] + 1
                 else:
                     dp[i1][i2][i3] = max(
                         dp[i1-1][i2][i3], 
                         dp[i1][i2-1][i3], 
                         dp[i1][i2][i3-1]
                     )
+                    
     return dp[len(s1)][len(s2)][len(s3)]
 
 def main():
