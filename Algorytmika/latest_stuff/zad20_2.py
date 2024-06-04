@@ -9,23 +9,26 @@ import requests
 import random
 import mmh3
 
+h = lambda v, s: mmh3.hash(v, s) % 21
+
 def main():
     w1 = "book"
     w2 = "pantadeusz"
-    AMOUNT_TESTS=1_000_000
+    AMOUNT_TESTS=1000
     
-    seeds = [random.randrange(1, 10_000_000) for _ in range(AMOUNT_TESTS)]
+    seeds = [random.randrange(1, 1_000_000) for _ in range(AMOUNT_TESTS)]
     collisions = []
 
     for seed in seeds:
-        h1 = mmh3.hash(w1, seed = seed)
-        h2 = mmh3.hash(w2, seed = seed)
+        h1 = h(w1, seed)
+        h2 = h(w2, seed)
         if h1 == h2:
             collisions.append(seed)
 
     print(f"{collisions=}")
     print(f"{len(collisions)=}")
     
+    print("Oczekiwana liczba kolizji: ", AMOUNT_TESTS / 21)
 
 
 if __name__ == "__main__":

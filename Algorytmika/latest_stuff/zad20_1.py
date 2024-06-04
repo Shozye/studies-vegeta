@@ -6,24 +6,31 @@
 # 2. Ustal dwa różne słowa a i b i przetestuj na tych słowach liczbę kolizji h_s(a) = hs(b) dla losowo wybranych 1000 wartości ziarna s
 
 from collections import Counter
+from matplotlib import pyplot as plt
 import requests
 import mmh3
 
-h = mmh3.hash
+h = lambda v, s: mmh3.hash(v, s) % 21
 
 PAN_TADEUSZ_PATH = "pan_tadeusz.txt"
+
 
 def main():
     book = set(read_book())
 
-    for seed in range(50):
+    for seed in [5,9,24,6624]:
         hashed = [h(elem, seed) for elem in book]
-        ctr = [x[1] for x in Counter(hashed).most_common()]
-        freqs = {}
-        for freq in [x[1] for x in Counter(hashed).most_common()]:
-            freqs[freq] = freqs.get(freq, 0) + 1
+        #print(hashed)
+        
+        ctr = (Counter(hashed).most_common())
+        xs_ys = sorted(ctr, key=lambda x: x[0])
+        xs = [str(x[0]) for x in xs_ys]
+        ys = [x[1] for x in xs_ys]
+        plt.plot(xs, ys)
+
+        plt.ylim(0, 2000)
+        plt.savefig(f"zad20_1_seed={seed}")
     
-        print(f"{seed=}, {freqs=}")
 
 def setup_pan_tadeusz():
     url = "https://wolnelektury.pl/media/book/txt/pan-tadeusz.txt"

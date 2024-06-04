@@ -17,7 +17,16 @@ def f1(x: float) -> float:
 def error(actual, expected):
     return abs(expected - actual) / expected
 
-def stratified_sampling(func, a: float, b: float, num_samples: int = 10000) -> float:
+def sampling(func, a: float, b: float, num_samples=1000) -> float:
+    sum_result = 0.0
+
+    for i in range(num_samples):
+        sum_result += func(random.uniform(a,b))
+
+    return (b-a) * sum_result / num_samples
+
+
+def stratified_sampling(func, a: float, b: float, num_samples: int = 1000) -> float:
     sum_result = 0.0
     interval_length = (b - a) / num_samples
     
@@ -28,7 +37,7 @@ def stratified_sampling(func, a: float, b: float, num_samples: int = 10000) -> f
     integral = sum_result * (b - a) / num_samples
     return integral
 
-def antithetic_variety_method(func, a: float, b: float, num_samples: int = 5000) -> float:
+def antithetic_variety_method(func, a: float, b: float, num_samples: int = 500) -> float:
     sum_result = 0.0
     
     for _ in range(num_samples):
@@ -39,6 +48,10 @@ def antithetic_variety_method(func, a: float, b: float, num_samples: int = 5000)
     return integral
 def main():
     goal_value = math.pi / 4
+
+    stratified_value = sampling(f1, 0, 1)
+    print(f"Sampling={stratified_value:.6}, \
+        error={error(stratified_value, goal_value):.4}")
     
     stratified_value = stratified_sampling(f1, 0, 1)
     print(f"Stratified SamplingMethod={stratified_value:.6}, \
