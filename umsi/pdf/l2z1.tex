@@ -30,7 +30,7 @@ Determine the optimal Bayes classifier and its risk.
 
 \section{Solution}
 
-\subsubsection{Bayes Classifier}
+\subsubsection*{Bayes Classifier}
 $h(y)$ chooses $x$ that maximizes possibility of hitting right value.
 
 $$h(y) = \arg \max_{x \in {0, 1}} P(X=x | Y=y)$$
@@ -39,7 +39,30 @@ It means that
 $$h(0) = 0 \iff P(X=0 | Y=0) > P(X=1 | Y=0)$$
 $$h(1) = 0 \iff P(X=0 | Y=1) > P(X=1 | Y=1)$$
 
-To calc
+So we need to calculate these probabilities and a lot of others.
 
+\begin{itemize}
+    \item From Task Description \\
+    $P(X=0) = 1-p$ \\
+    $P(X=1) = p$ \\
+    $P(Y=0 | X = 0) = 1-p$ \\
+    $P(Y=0 | X=1) = p$ \\
+    $P(Y=1 | X=0) = p$ \\
+    $P(Y=1 | X=1) = 1-p$ 
+    \item Marginal Probabilities \\
+    $P(Y=0) = P(Y=0 \land X=0) + P(Y=0 \land X=1) = (1-p)^2 + p^2$ \\
+    $P(Y=1) = P(Y=1 \land X=0) + P(Y=1 \land X=1) = (1-p)\cdot p + (1-p)\cdot p$ 
+    \item Posterior Probabilities from Bayes \\
+    $P(X=0 | Y=0) = \frac{(1-p)^2}{(1-p)^2 + p^2}$ \\
+    $P(X=1 | Y=0) = \frac{p^2}{(1-p)^2 + p^2}$ \\
+    $P(X=0 | Y=1) = \frac{p\cdot(1-p)}{2p\cdot(1-p)}$ \\
+    $P(X=1 | Y=1) = \frac{p \cdot(1-p)}{2p\cdot(1-p)}$ 
+\end{itemize}
+From above we can say that $h(0) = 0$, because for $p < \frac{1}{2}$, we have $p^2 < (1-p)^2$. \\
+On the other hand, as $P(X=0|Y=1) = P(X=1|Y=1)$, we can choose any value for $h(1)$ so for symmetry we choose $h(1) = 1$
+
+\subsubsection*{Risk}
+$$L^* = P(X=0) \min{P(Y=1 | X=0), P(Y=0|X=0)} + P(X=1)\min{P(Y=1|X=1), P(Y=0|X=1)}$$
+$$L^* = (1-p)\cdot(p) + p^2 = p$$
 
 \end{document}
