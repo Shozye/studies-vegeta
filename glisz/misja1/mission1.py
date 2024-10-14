@@ -80,17 +80,18 @@ def binom_n_2(n: int) -> float:
 
 
 def main():
-    ns_tested = [5] + list(range(10, 500, 50))
+    ns_tested = [5] + list(range(10, 400, 50))
     possible_ms = [
-        lambda n: math.sqrt(n),
-        lambda n: n,
-        lambda n: n * math.log2(n),
-        lambda n: (1/4) * n**2
+        (lambda n: math.sqrt(n), "sqrt(n)"),
+        (lambda n: n, "n"),
+        (lambda n: 2*n, "2n"),
+        (lambda n: n * math.log2(n), "n*log2(n)"),
+        (lambda n: (1/4) * n**2, "1/4n**2")
     ]
     data = dict()
     print_string = ""
     
-    for possible_m in possible_ms:
+    for possible_m, m_name in possible_ms:
         for n in ns_tested:
             m = int(possible_m(n))
             if m > binom_n_2(n):
@@ -111,29 +112,26 @@ def main():
                 for _ in range(AMOUNT_TESTS):
                     graph = g()
                     graph_features = [f(graph) for f in features]
+                    
                 
                     if n not in data:
                         data[n] = dict()
-                    if m not in data[n]:
-                        data[n][m] = dict()
+                    if m_name not in data[n]:
+                        data[n][m_name] = dict()
                         
-                    if graph.name not in data[n][m]:
-                        data[n][m][graph.name] = graph_features
+                    if g not in data[n][m_name]:
+                        data[n][m_name][graph.name] = graph_features
                     else:
                         for i in range(len(graph_features)):
-                            data[n][m][graph.name][i] += graph_features[i]
+                            data[n][m_name][graph.name][i] += graph_features[i]
                 
-                for i in range(len(data[n][m][graph.name])):
-                    data[n][m][graph.name][i] /= AMOUNT_TESTS
+                for i in range(len(data[n][m_name][graph.name])):
+                    data[n][m_name][graph.name][i] /= AMOUNT_TESTS
                 
-                print_string += f"{n} {m} {graph.name} {' '.join([str(x) for x in data[n][m][graph.name]])}\n"
-        
-                
-    with open("data.json", 'w+') as file:
-        file.write(json.dumps(data, indent=4))
+                print_string += f"{n} {m_name} {g} {' '.join([str(x) for x in data[n][m_name][graph.name]])}\n"
     
     with open("data.txt", 'w+') as file:
         file.write(print_string)
                 
 if __name__ == "__main__":
-    cProfile.run('main()', sort=2)
+    main()
