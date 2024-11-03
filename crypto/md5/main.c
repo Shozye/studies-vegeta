@@ -126,14 +126,11 @@ int is_collision(uint8_t* m0, uint8_t* m00, uint8_t* m1, uint8_t* m11, int print
     return has_collided;
 }
 
-int is_collision(uint8_t* m0, uint8_t* m00, uint8_t* m1, uint8_t* m11){
-    is_collision(m0, m00, m1, m11, 0);
-}
 
 int main() {
     is_collision(M0, M0_prime, M1, M1_prime, 1);
 
-    
+
     return 0;
 }
 
