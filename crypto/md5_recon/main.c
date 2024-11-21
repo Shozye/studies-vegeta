@@ -84,6 +84,7 @@ void calculate_md5(uint8_t *input, size_t input_len, uint8_t *output) {
     mbedtls_md5_init(&ctx);
     mbedtls_md5_starts(&ctx);
     mbedtls_md5_update(&ctx, input, input_len);
+    /*if there is more input to hash, we can use update more*/
     mbedtls_md5_finish(&ctx, output);
 }
 

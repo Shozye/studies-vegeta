@@ -1,0 +1,48 @@
+Loop: 1, Candidates: 159, Time for loop: 17.2757 seconds
+Loop: 2, Candidates: 298, Time for loop: 17.6709 seconds
+Loop: 3, Candidates: 471, Time for loop: 17.6998 seconds
+Loop: 4, Candidates: 645, Time for loop: 17.4054 seconds
+Loop: 5, Candidates: 817, Time for loop: 17.7217 seconds
+Loop: 6, Candidates: 989, Time for loop: 17.4275 seconds
+Loop: 7, Candidates: 1150, Time for loop: 17.1194 seconds
+Loop: 8, Candidates: 1317, Time for loop: 17.1148 seconds
+Loop: 9, Candidates: 1490, Time for loop: 17.1264 seconds
+Loop: 10, Candidates: 1637, Time for loop: 17.1382 seconds
+Loop: 11, Candidates: 1828, Time for loop: 17.1794 seconds
+Loop: 12, Candidates: 2017, Time for loop: 17.5216 seconds
+Loop: 13, Candidates: 2181, Time for loop: 17.8205 seconds
+Loop: 14, Candidates: 2366, Time for loop: 17.2438 seconds
+Loop: 15, Candidates: 2527, Time for loop: 17.47 seconds
+Loop: 16, Candidates: 2704, Time for loop: 17.6067 seconds
+Loop: 17, Candidates: 2878, Time for loop: 17.8783 seconds
+Loop: 18, Candidates: 3055, Time for loop: 17.4546 seconds
+Loop: 19, Candidates: 3199, Time for loop: 17.5913 seconds
+Loop: 20, Candidates: 3381, Time for loop: 18.5311 seconds
+Loop: 21, Candidates: 3565, Time for loop: 17.9496 seconds
+Loop: 22, Candidates: 3742, Time for loop: 19.2283 seconds
+Loop: 23, Candidates: 3912, Time for loop: 17.9048 seconds
+Loop: 24, Candidates: 4087, Time for loop: 17.594 seconds
+Loop: 25, Candidates: 4250, Time for loop: 17.4304 seconds
+Loop: 26, Candidates: 4418, Time for loop: 17.5209 seconds
+Loop: 27, Candidates: 4592, Time for loop: 17.3213 seconds
+Loop: 28, Candidates: 4750, Time for loop: 17.2004 seconds
+Loop: 29, Candidates: 4932, Time for loop: 17.2071 seconds
+Loop: 30, Candidates: 5107, Time for loop: 17.1688 seconds
+Loop: 31, Candidates: 5270, Time for loop: 17.1747 seconds
+Loop: 32, Candidates: 5442, Time for loop: 17.1798 seconds
+Loop: 33, Candidates: 5597, Time for loop: 17.1811 seconds
+Loop: 34, Candidates: 5766, Time for loop: 17.1791 seconds
+Loop: 35, Candidates: 5964, Time for loop: 17.2025 seconds
+Loop: 36, Candidates: 6123, Time for loop: 17.1906 seconds
+Loop: 37, Candidates: 6313, Time for loop: 17.2772 seconds
+Loop: 38, Candidates: 6471, Time for loop: 17.3046 seconds
+Loop: 39, Candidates: 6641, Time for loop: 17.2861 seconds
+Loop: 40, Candidates: 6821, Time for loop: 17.8624 seconds
+Loop: 41, Candidates: 6993, Time for loop: 18.3535 seconds
+Loop: 42, Candidates: 7183, Time for loop: 18.136 seconds
+Collision found:
+m0: [0x2dd31d1, 0xc4eee6c5, 0x69a3d69, 0x5cf9af98, 0x87b5ca2f, 0xab7e4612, 0x3e580440, 0x897ffbb8, 0x634ad55, 0x2b3f409, 0x8388e483, 0x5a417125, 0xe8255108, 0x9fc9cdf7, 0xf2bd1dd9, 0x5b3c3780]
+m1: [0xdb7e9b9d, 0xdb9b3a56, 0xd8903bb9, 0xa38cecdb, 0x96c5326d, 0xdbb86d71, 0x6ec4530, 0xbde1774f, 0x26faaffd, 0x485fb349, 0x89c75aca, 0x7ee5d48b, 0xdf10910b, 0x9fd3f15f, 0xa0294805, 0x5bf8c802]
+m0_prim: [0x2dd31d1, 0xc4eee6c5, 0x69a3d69, 0x5cf9af98, 0x7b5ca2f, 0xab7e4612, 0x3e580440, 0x897ffbb8, 0x634ad55, 0x2b3f409, 0x8388e483, 0x5a41f125, 0xe8255108, 0x9fc9cdf7, 0x72bd1dd9, 0x5b3c3780]
+m1_prim: [0xdb7e9b9d, 0xdb9b3a56, 0xd8903bb9, 0xa38cecdb, 0x16c5326d, 0xdbb86d71, 0x6ec4530, 0xbde1774f, 0x26faaffd, 0x485fb349, 0x89c75aca, 0x7ee5548b, 0xdf10910b, 0x9fd3f15f, 0x20294805, 0x5bf8c802]
+hash: [0x52589324, 0x3093d7ca, 0x2a06dc54, 0x20c5be06]Collision verified!
