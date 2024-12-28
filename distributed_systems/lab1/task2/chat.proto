@@ -10,7 +10,7 @@ message Note {
 }
 
 message Result {
-  int result = 1;
+    int64 result = 1;
 }
 
 

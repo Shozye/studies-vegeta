@@ -44,7 +44,7 @@ int main(){
         } else if (method == "lseek") {
             std::cout << "enter <fd offset whence>" << std::endl;
             std::cin >> fd >> offset >> whence;
-            off_t retval =  nlseek(fd, offset, count);
+            off_t retval =  nlseek(fd, offset, whence);
             std::cout << "return value of lseek: " << retval << std::endl;
 
         } else if (method == "chmod") {
@@ -59,14 +59,14 @@ int main(){
 
             std::cout << "enter <pathname>" << std::endl;
             std::cin >> filename;   
-            int retval = unlink(filename.c_str());
+            int retval = nunlink(filename.c_str());
             std::cout << "return value of unlink: " << retval << std::endl;
 
         } else if (method == "rename") {
 
             std::cout << "enter <pathname_old pathname_new>" << std::endl;
             std::cin >> filename >> new_filename;  
-            int retval = rename(filename.c_str(), new_filename.c_str());
+            int retval = nrename(filename.c_str(), new_filename.c_str());
             std::cout << "return value of rename: " << retval << std::endl;
         } else 
             std::cout << " no method like this. :) " << std::endl;

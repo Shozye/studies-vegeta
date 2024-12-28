@@ -101,7 +101,7 @@ ServerMessage send_and_receive(ClientMessage msg){
         }
         now = std::chrono::high_resolution_clock::now();
         elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start);
-        break;
+        // break;
     }
     return response;
 }
@@ -136,6 +136,7 @@ void starting_setup(std::string last_cmd){
 
 int nopen(const char *pathname, mode_t mode){
     starting_setup("nopen");
+
     ClientMessage request;
     request.info = "";
     request.func_name = "open";

@@ -15,3 +15,9 @@ class Note(_message.Message):
     name: str
     message: str
     def __init__(self, name: _Optional[str] = ..., message: _Optional[str] = ...) -> None: ...
+
+class Result(_message.Message):
+    __slots__ = ("result",)
+    RESULT_FIELD_NUMBER: _ClassVar[int]
+    result: int
+    def __init__(self, result: _Optional[int] = ...) -> None: ...
