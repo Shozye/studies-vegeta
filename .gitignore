@@ -3,3 +3,4 @@ venv
 261737
 tests
 .vscode
+**/__pycache__

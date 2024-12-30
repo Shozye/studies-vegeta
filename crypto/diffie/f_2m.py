@@ -112,6 +112,7 @@ class F2mElement:
         base = -self
  
         result = F2mElement(self.ctx, 1)
+
         while exp > 0:
             if exp % 2 == 1:
                 result = result * base
@@ -121,7 +122,7 @@ class F2mElement:
 
     
     def pow_secure(self, exp: int) -> "F2mElement":
-        base = -self
+        base = -self # those - selfs are just to copy tbh 
         dummy = -self
 
         result = F2mElement(self.ctx, val=1)

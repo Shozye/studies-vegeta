@@ -9,6 +9,10 @@ class FpkContext:
     p: int
     modulus: list[FpElement]
 
+    @staticmethod
+    def from_ints(p: int, modulus: list[int]) -> "FpkContext":
+        return FpkContext(p, modulus=[FpElement(p, c) for c in modulus])
+
     def get_poly_degree(self,):
       return len(self.modulus) - 1 # that is because if 8 elements in the list, the last one is x^7
 
@@ -39,6 +43,8 @@ class FpkElement:
     def modulus(self, coeffs: list[FpElement]) -> list[FpElement]:
         # This function wants to do coeffs % ctx.coeffs
         coeffs = [a for a in coeffs] # just copying the list
+        some_i = 0
+
         while len(coeffs) > self.ctx.get_poly_degree():
             leading = coeffs[-1]
             if leading.is_zero():
@@ -53,6 +59,7 @@ class FpkElement:
             coeffs = [c - t for c, t in zip(coeffs, temp)] # subtraction between coeffs and temp
             while coeffs[-1].is_zero():
                 coeffs.pop()
+            some_i += 1
         return coeffs
     
 
@@ -80,16 +87,11 @@ class FpkElement:
             quotient[degree_diff] += lead_coeff
 
             # Update the remainder
-            # print('1', len(remainder), len(scaled_divisor))
             remainder = self.poly_sub(remainder, scaled_divisor)
-            # print('2', len(remainder), len(scaled_divisor))
 
             while len(remainder) != 0 and remainder[-1].is_zero():
                 remainder.pop()
-            # print('3', len(remainder), len(scaled_divisor))
 
-        #quotient.reverse()  # Correct the order of the quotient
-        # print(quotient)
         return quotient, remainder 
 
     def poly_sub(self, poly1: list[FpElement], poly2: list[FpElement]) -> list[FpElement]:
@@ -145,7 +147,6 @@ class FpkElement:
             s0, s1 = s1, s2
             t0, t1 = t1, t2
             # logging.info(r1)
-            # print(r1)
 
         # At the end, r0 is the gcd, and t0 is the inverse polynomial up to a scaling factor
         inv_lead = r0[-1].inverse()
