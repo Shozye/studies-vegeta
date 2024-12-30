@@ -16,16 +16,13 @@ def slowik_base64_decode(value: str) -> int:
 
 def slowik_base64_encode_bitstring(value: int) -> str:
     """Encodes an integer as a bit string in little-endian order, then URL-safe base64."""
-    # print(f"During base64 encode bitstring, {value.bit_length()}, ")
+    print(f"During base64 encode bitstring, {value.bit_length()}, ")
 
-    # Convert the integer to a byte array (arbitrary length for large integers)
-    little_endian_bytes = value.to_bytes((value.bit_length() + 7) // 8, byteorder='little', signed=True)
+    byte_length = (value.bit_length() + 7) // 8
+    little_endian_bytes = value.to_bytes(byte_length, byteorder='little')
+    base64_encoded = base64.urlsafe_b64encode(little_endian_bytes).rstrip(b'=').decode('utf-8')
 
-    # Encode to URL-safe base64
-    base64_encoded = base64.urlsafe_b64encode(little_endian_bytes)
-
-    # Return the base64 encoded string as a string
-    return base64_encoded.decode('utf-8')
+    return base64_encoded
         
 def slowik_base64_decode_bitstring(value: str) -> int:
     """Decodes a URL-safe base64 string, treats it as a bit string in little-endian order, and converts it to an integer."""
@@ -34,7 +31,7 @@ def slowik_base64_decode_bitstring(value: str) -> int:
     decoded_bytes = base64.urlsafe_b64decode(value + padding)
     
     # Convert bytes to an integer, using little-endian order
-    return int.from_bytes(decoded_bytes, "little", signed=True)
+    return int.from_bytes(decoded_bytes, "little")
 
 class BaseResponse(BaseModel):
     status: str
@@ -67,45 +64,11 @@ class F2mParams(ParamsBase):
     def decode_params1(cls, value: str, info:ValidationInfo):
         extension: int = info.data['extension']
         padding = '=' * (-len(value) % 4)
-        decoded_bytes = bytearray(base64.urlsafe_b64decode(value + padding))
+        decoded_bytes = base64.urlsafe_b64decode(value + padding)
+        modulus = int.from_bytes(decoded_bytes, 'little')
         
-        while(len(decoded_bytes)*8 <= extension):
-            decoded_bytes.append(0x00)
-        for i, decoded_byte in enumerate(decoded_bytes):
-            if 8 > extension >= 0:
-                construct_mask_for_extension = 1 <<(8-extension - 1)
-                decoded_bytes[i] = (decoded_byte | construct_mask_for_extension )
-            else:
-                extension -= 8
-        # print(f"{decoded_bytes=}")
-        proper_modulus = 179769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536021120113879871393357658789768814416622492847430639474124377767893424865485276302219601246094119453082952085005768838150682342462881473913110540827237163350510684586298239947245938479716304835356329624224144025
-        proper_modulus_into_decoded_bytes = bytearray(int.to_bytes(proper_modulus, length=256, byteorder='little'))
-        # print(f"{proper_modulus_into_decoded_bytes=}")
-
-        modulus=int.from_bytes(decoded_bytes, "little")
-        # print(f"IMO {modulus=}")
-
-        return modulus
-        
-        raise Exception("CHUJ")
-        # try:
-            # bitstring = ""
-            # for letter in value:
-            #     bitstring += (bin(ord(letter))[2:]).rjust(8, '0')
-            # if bitstring[-1] == '1':
-            #     bitstring+='1000'+'0000'
-            # else:
-            #     # to nie jest przetestowane ale powinno dzialac
-            #     i = len(bitstring)-1
-            #     while bitstring[i-1] == '0':
-            #         i -= 1
-            #     bitarray = list(bitstring)
-            #     bitarray[i] = '1'
-            #     bitstring = ''.join(bitarray)
-            
-            # return slowik_base64_decode_bitstring(str(value))
-        # except Exception as e:
-        #     raise ValueError(f"Failed to decode base64 value modulus'{value}': {e}")
+        modulus_with_shit = modulus | (1 << extension)
+        return modulus_with_shit
 
     @field_validator("generator", mode='before')
     @classmethod
@@ -368,6 +331,7 @@ class Api:
     def modp_challenge(self, public: int) -> ChallengeModPResponse:
         url = 'https://crypto24.random-oracle.xyz/validate/list2/modp/challenge'
         payload = ChallengeModPRequest(public=str(public))
+        print(f"{payload=}")
         response = requests.post(url, json=payload.model_dump())
         if 'detail' in response.json():
             raise Exception(f"Error {response.json()} during modp challenge!")
@@ -376,7 +340,9 @@ class Api:
     def f2m_challenge(self, public: int) -> ChallengeF2mResponse:
         url = 'https://crypto24.random-oracle.xyz/validate/list2/f2m/challenge'
         payload = ChallengeF2mRequest(public=str(public))
+        # print(f"{payload=}")
         response = requests.post(url, json=payload.model_dump())
+
         if 'detail' in response.json():
             raise Exception(f"Error {response.json()} during f2m challenge!")
         return ChallengeF2mResponse(**response.json())

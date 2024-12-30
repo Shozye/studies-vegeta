@@ -66,6 +66,18 @@ def diffie_helman_modp(response: SubmissionChallengeResponse):
     g_ba = g_b.pow(a)
     return g_a, g_ba
 
+def diffie_helman_f2m(response: SubmissionChallengeResponse) -> tuple[F2mElement, F2mElement]:
+    ctx = F2mContext(response.f2m_params.modulus)
+    a: int = secrets.randbits(k=2048)
+    g = F2mElement(ctx=ctx, val=response.f2m_params.generator)
+
+    g_a = g.pow(a)
+    g_b = F2mElement(ctx, response.f2m_challenge.public)
+
+    g_ba = g_b.pow(a)
+
+    return g_a, g_ba
+
 def diffie_helman_fpk(response: SubmissionChallengeResponse) -> tuple[FpkElement, FpkElement]:
     ctx = FpkContext.from_ints(response.fpk_params.prime_base, response.fpk_params.modulus)
     a = secrets.randbits(2048)
@@ -81,22 +93,41 @@ def test_solution(api: Api):
     response: SubmissionChallengeResponse = api.get_solution_challenge()
 
     g_a_modp, g_ba_modp = diffie_helman_modp(response)
+    g_a_f2m, g_ba_f2m = diffie_helman_f2m(response)
     g_a_fpk, g_ba_fpk = diffie_helman_fpk(response)
 
     solution_response = api.post_solution_challenge(
         response.session_id,
-          g_a_modp.val, g_ba_modp.val, 
-          969868, 77, 
-          [elem.val for elem in g_a_fpk.coefficients], [elem.val for elem in g_ba_fpk.coefficients])
+        g_a_modp.val, g_ba_modp.val, 
+        g_a_f2m.val, g_ba_f2m.val,
+
+        [elem.val for elem in g_a_fpk.coefficients], [elem.val for elem in g_ba_fpk.coefficients])
+    print(solution_response.model_dump_json(indent=4))
+
+def test_solution_wrong(api: Api):
+    response: SubmissionChallengeResponse = api.get_solution_challenge()
+
+    # g_a_modp, g_ba_modp = diffie_helman_modp(response)
+    # g_a_f2m, g_ba_f2m = diffie_helman_f2m(response)
+    # g_a_fpk, g_ba_fpk = diffie_helman_fpk(response)
+
+    solution_response = api.post_solution_challenge(
+        response.session_id,
+        4334, 676776, 
+        6776, 7667,
+        [788], [88])
     print(solution_response.model_dump_json(indent=4))
 
 
 def main():
-    api = Api(999997)
-    # test_validate_modp(api)
-    # test_validate_f2m(api)
-    # test_validate_fpk(api)
-    test_solution(api)
+    for student_id in [9997, 2561, 534666, 134988, 2348923]:
+        print(f"{student_id=}")
+        api = Api(student_id)
+        # test_validate_modp(api)
+        # test_validate_f2m(api)
+        # test_validate_fpk(api)
+        test_solution(api)
+        # test_solution_wrong(api)
 
 if __name__ == "__main__":
     main()
