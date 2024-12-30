@@ -1,7 +1,8 @@
 import base64
 from typing import Literal
 import requests
-from pydantic import BaseModel, Field, ValidationInfo, field_validator
+from pydantic import BaseModel, Field, ValidationInfo, field_validator, root_validator
+from bitstring import BitArray
 
 def slowik_base64_encode(value: int, byteorder: Literal['little', 'big']) -> str:
     """Encodes an integer into URL-safe base64, big-endian with no padding."""
@@ -15,6 +16,8 @@ def slowik_base64_decode(value: str) -> int:
 
 def slowik_base64_encode_bitstring(value: int) -> str:
     """Encodes an integer as a bit string in little-endian order, then URL-safe base64."""
+    # print(f"During base64 encode bitstring, {value.bit_length()}, ")
+
     # Convert the integer to a byte array (arbitrary length for large integers)
     little_endian_bytes = value.to_bytes((value.bit_length() + 7) // 8, byteorder='little', signed=True)
 
@@ -58,13 +61,68 @@ class F2mParams(ParamsBase):
     generator: int  # Subgroup generator g
     order: int  # Subgroup order q
 
-    @field_validator("modulus", "generator", "order", mode='before')
+
+    @field_validator("modulus", mode='before')
     @classmethod
-    def decode_params(cls, value: str, info:ValidationInfo):
+    def decode_params1(cls, value: str, info:ValidationInfo):
+        extension: int = info.data['extension']
+        padding = '=' * (-len(value) % 4)
+        decoded_bytes = bytearray(base64.urlsafe_b64decode(value + padding))
+        
+        while(len(decoded_bytes)*8 <= extension):
+            decoded_bytes.append(0x00)
+        for i, decoded_byte in enumerate(decoded_bytes):
+            if 8 > extension >= 0:
+                construct_mask_for_extension = 1 <<(8-extension - 1)
+                decoded_bytes[i] = (decoded_byte | construct_mask_for_extension )
+            else:
+                extension -= 8
+        # print(f"{decoded_bytes=}")
+        proper_modulus = 179769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536021120113879871393357658789768814416622492847430639474124377767893424865485276302219601246094119453082952085005768838150682342462881473913110540827237163350510684586298239947245938479716304835356329624224144025
+        proper_modulus_into_decoded_bytes = bytearray(int.to_bytes(proper_modulus, length=256, byteorder='little'))
+        # print(f"{proper_modulus_into_decoded_bytes=}")
+
+        modulus=int.from_bytes(decoded_bytes, "little")
+        # print(f"IMO {modulus=}")
+
+        return modulus
+        
+        raise Exception("CHUJ")
+        # try:
+            # bitstring = ""
+            # for letter in value:
+            #     bitstring += (bin(ord(letter))[2:]).rjust(8, '0')
+            # if bitstring[-1] == '1':
+            #     bitstring+='1000'+'0000'
+            # else:
+            #     # to nie jest przetestowane ale powinno dzialac
+            #     i = len(bitstring)-1
+            #     while bitstring[i-1] == '0':
+            #         i -= 1
+            #     bitarray = list(bitstring)
+            #     bitarray[i] = '1'
+            #     bitstring = ''.join(bitarray)
+            
+            # return slowik_base64_decode_bitstring(str(value))
+        # except Exception as e:
+        #     raise ValueError(f"Failed to decode base64 value modulus'{value}': {e}")
+
+    @field_validator("generator", mode='before')
+    @classmethod
+    def decode_params2(cls, value: str, info:ValidationInfo):
+        try:
+            return slowik_base64_decode_bitstring(value)
+        except Exception as e:
+            raise ValueError(f"Failed to decode base64 value generator '{value}': {e}")
+
+    @field_validator("order", mode='before')
+    @classmethod
+    def decode_params3(cls, value: str, info:ValidationInfo):
         try:
             return slowik_base64_decode(value)
         except Exception as e:
-            raise ValueError(f"Failed to decode base64 value '{value}': {e}")
+            raise ValueError(f"Failed to decode base64 value order '{value}': {e}")
+
 
 
 class FpkParams(ParamsBase):
@@ -82,9 +140,18 @@ class FpkParams(ParamsBase):
         except Exception as e:
             raise ValueError(f"Failed to decode base64 value '{value}': {e}")
 
-    @field_validator("modulus", "generator", mode='before')
+    @field_validator("modulus", mode='before')
     @classmethod
     def decode_params2(cls, value: list[str], info:ValidationInfo):
+        try:
+            new_value = list(map(slowik_base64_decode, value))
+            return new_value + [1]
+        except Exception as e:
+            raise ValueError(f"Failed to decode base64 value '{value}': {e}")
+
+    @field_validator("generator", mode='before')
+    @classmethod
+    def decode_params3(cls, value: list[str], info:ValidationInfo):
         try:
             return list(map(slowik_base64_decode, value))
         except Exception as e:
@@ -112,7 +179,7 @@ class ChallengeF2mRequest(BaseModel):
         try:
             return slowik_base64_encode_bitstring(int(value))
         except Exception as e:
-            raise ValueError(f"Failed to encode public key: {e}")
+            raise # ValueError(f"Failed to encode public key: {e}")
 
 
 class ChallengeFpkRequest(BaseModel):
