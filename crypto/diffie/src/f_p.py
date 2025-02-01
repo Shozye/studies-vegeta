@@ -65,7 +65,7 @@ class FpElement:
             if exp % 2 == 1:
                 result = result * base
             else:
-                dummy = result * base
+                dummy = dummy * base
             base = base * base
             exp //= 2
 

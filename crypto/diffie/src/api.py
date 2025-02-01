@@ -2,35 +2,28 @@ import base64
 from typing import Literal
 import requests
 from pydantic import BaseModel, Field, ValidationInfo, field_validator, root_validator
-from bitstring import BitArray
 
-def slowik_base64_encode(value: int, byteorder: Literal['little', 'big']) -> str:
+def base_64_encode(value: int) -> str:
     """Encodes an integer into URL-safe base64, big-endian with no padding."""
-    byte_array = value.to_bytes((value.bit_length() + 7) // 8, byteorder=byteorder)
+    byte_array = value.to_bytes((value.bit_length() + 7) // 8, byteorder='big')
     return base64.urlsafe_b64encode(byte_array).decode().rstrip('=')
 
-def slowik_base64_decode(value: str) -> int:
+def base_64_decode(value: str) -> int:
     padding = '=' * (-len(value) % 4)
     decoded_bytes = base64.urlsafe_b64decode(value + padding)
     return int.from_bytes(decoded_bytes, "big")
 
-def slowik_base64_encode_bitstring(value: int) -> str:
+def base64_encode_bitstring(value: int) -> str:
     """Encodes an integer as a bit string in little-endian order, then URL-safe base64."""
-    print(f"During base64 encode bitstring, {value.bit_length()}, ")
-
     byte_length = (value.bit_length() + 7) // 8
     little_endian_bytes = value.to_bytes(byte_length, byteorder='little')
     base64_encoded = base64.urlsafe_b64encode(little_endian_bytes).rstrip(b'=').decode('utf-8')
 
     return base64_encoded
         
-def slowik_base64_decode_bitstring(value: str) -> int:
-    """Decodes a URL-safe base64 string, treats it as a bit string in little-endian order, and converts it to an integer."""
-    # Add necessary padding for base64
+def base64_decode_bitstring(value: str) -> int:
     padding = '=' * (-len(value) % 4)
     decoded_bytes = base64.urlsafe_b64decode(value + padding)
-    
-    # Convert bytes to an integer, using little-endian order
     return int.from_bytes(decoded_bytes, "little")
 
 class BaseResponse(BaseModel):
@@ -48,7 +41,7 @@ class ModPParams(ParamsBase):
     @classmethod
     def decode_params(cls, value: str, info:ValidationInfo):
         try:
-            return slowik_base64_decode(value)
+            return base_64_decode(value)
         except Exception as e:
             raise ValueError(f"Failed to decode base64 value '{value}': {e}")
 
@@ -66,7 +59,6 @@ class F2mParams(ParamsBase):
         padding = '=' * (-len(value) % 4)
         decoded_bytes = base64.urlsafe_b64decode(value + padding)
         modulus = int.from_bytes(decoded_bytes, 'little')
-        
         modulus_with_shit = modulus | (1 << extension)
         return modulus_with_shit
 
@@ -74,7 +66,7 @@ class F2mParams(ParamsBase):
     @classmethod
     def decode_params2(cls, value: str, info:ValidationInfo):
         try:
-            return slowik_base64_decode_bitstring(value)
+            return base64_decode_bitstring(value)
         except Exception as e:
             raise ValueError(f"Failed to decode base64 value generator '{value}': {e}")
 
@@ -82,7 +74,7 @@ class F2mParams(ParamsBase):
     @classmethod
     def decode_params3(cls, value: str, info:ValidationInfo):
         try:
-            return slowik_base64_decode(value)
+            return base_64_decode(value)
         except Exception as e:
             raise ValueError(f"Failed to decode base64 value order '{value}': {e}")
 
@@ -99,7 +91,7 @@ class FpkParams(ParamsBase):
     @classmethod
     def decode_params1(cls, value: str, info:ValidationInfo):
         try:
-            return slowik_base64_decode(value)
+            return base_64_decode(value)
         except Exception as e:
             raise ValueError(f"Failed to decode base64 value '{value}': {e}")
 
@@ -107,7 +99,7 @@ class FpkParams(ParamsBase):
     @classmethod
     def decode_params2(cls, value: list[str], info:ValidationInfo):
         try:
-            new_value = list(map(slowik_base64_decode, value))
+            new_value = list(map(base_64_decode, value))
             return new_value + [1]
         except Exception as e:
             raise ValueError(f"Failed to decode base64 value '{value}': {e}")
@@ -116,7 +108,7 @@ class FpkParams(ParamsBase):
     @classmethod
     def decode_params3(cls, value: list[str], info:ValidationInfo):
         try:
-            return list(map(slowik_base64_decode, value))
+            return list(map(base_64_decode, value))
         except Exception as e:
             raise ValueError(f"Failed to decode base64 value '{value}': {e}")
 
@@ -140,7 +132,7 @@ class ChallengeF2mRequest(BaseModel):
     @classmethod
     def encode_public(cls, value: str, info: ValidationInfo):
         try:
-            return slowik_base64_encode_bitstring(int(value))
+            return base64_encode_bitstring(int(value))
         except Exception as e:
             raise # ValueError(f"Failed to encode public key: {e}")
 
@@ -153,7 +145,7 @@ class ChallengeFpkRequest(BaseModel):
     def encode_public(cls, value: list[str], info: ValidationInfo):
         try:
             # Assume the input is a list of string representations of integers
-            return [slowik_base64_encode(int(coeff), byteorder='big') for coeff in value]  # Reverse for little-endian
+            return [base_64_encode(int(coeff)) for coeff in value]  # Reverse for little-endian
         except Exception as e:
             raise ValueError(f"Failed to encode public key coefficients: {e}")
 
@@ -166,7 +158,7 @@ class ChallengeModPRequest(BaseModel):
     @classmethod
     def encode_public(cls, value: str, info: ValidationInfo):
         try:
-            return slowik_base64_encode(int(value), byteorder='big')  # Assume input is a string representation of an integer
+            return base_64_encode(int(value))  # Assume input is a string representation of an integer
         except Exception as e:
             raise ValueError(f"Failed to encode public key: {e}")
         
@@ -179,7 +171,7 @@ class ChallengeF2mResponse(BaseResponse):
     @classmethod
     def encode_fields(cls, value: str, info: ValidationInfo):
         try:
-            return slowik_base64_decode_bitstring(value)
+            return base64_decode_bitstring(value)
         except Exception as e:
             raise ValueError(f"Failed to encode field {info.field_name}: {e}")
         
@@ -193,7 +185,7 @@ class ChallengeModPResponse(BaseResponse):
     def encode_fields(cls, value: str, info: ValidationInfo):
         """Encodes the input value using URL-safe base64 with big-endian encoding."""
         try:
-            return slowik_base64_decode(value)
+            return base_64_decode(value)
         except Exception as e:
             raise ValueError(f"Failed to encode field {info.field_name}: {e}")
 
@@ -207,7 +199,7 @@ class ChallengeFpkResponse(BaseResponse):
     def encode_coefficients(cls, value: list[str], info: ValidationInfo):
         """Encodes a list of coefficients using URL-safe base64 with big-endian encoding."""
         try:
-            return [slowik_base64_decode(coeff) for coeff in value]
+            return [base_64_decode(coeff) for coeff in value]
         except Exception as e:
             raise ValueError(f"Failed to encode field {info.field_name}: {e}")
 
@@ -220,7 +212,7 @@ class ModPParamsSubmissionRequest(BaseResponse):
     @classmethod
     def decode_params(cls, value: str, info: ValidationInfo):
         try:
-            return slowik_base64_encode(int(value), byteorder='big')
+            return base_64_encode(int(value))
         except Exception as e:
             raise ValueError(f"Failed to decode base64 value '{value}': {e}")
 
@@ -232,7 +224,7 @@ class F2mParamsSubmissionRequest(BaseResponse):
     @classmethod
     def decode_params(cls, value: str, info: ValidationInfo):
         try:
-            return slowik_base64_encode_bitstring(int(value))
+            return base64_encode_bitstring(int(value))
         except Exception as e:
             raise ValueError(f"Failed to decode base64 value '{value}': {e}")
 
@@ -245,7 +237,7 @@ class FpkParamsSubmissionRequest(BaseResponse):
     def decode_params(cls, value: list[str], info: ValidationInfo):
         try:
             # Decode each element of the list
-            return [slowik_base64_encode(int(item), byteorder='big') for item in value]
+            return [base_64_encode(int(item)) for item in value]
         except Exception as e:
             raise ValueError(f"Failed to decode base64 value '{value}': {e}")
 
@@ -268,7 +260,7 @@ class ModPChallenge(BaseModel):
     @classmethod
     def decode_params(cls, value: str, info: ValidationInfo):
         try:
-            return slowik_base64_decode(value)
+            return base_64_decode(value)
         except Exception as e:
             raise ValueError(f"Failed to decode base64 value '{value}': {e}")
         
@@ -279,7 +271,7 @@ class FpkChallenge(BaseModel):
     @classmethod
     def decode_params(cls, value: list[str], info: ValidationInfo):
         try:
-            return [slowik_base64_decode(val) for val in value]
+            return [base_64_decode(val) for val in value]
         except Exception as e:
             raise ValueError(f"Failed to decode base64 value '{value}': {e}")
 
@@ -290,7 +282,7 @@ class F2mChallenge(BaseModel):
     @classmethod
     def decode_params(cls, value: str, info: ValidationInfo):
         try:
-            return slowik_base64_decode_bitstring(value)
+            return base64_decode_bitstring(value)
         except Exception as e:
             raise ValueError(f"Failed to decode base64 value '{value}': {e}")
 
@@ -331,7 +323,7 @@ class Api:
     def modp_challenge(self, public: int) -> ChallengeModPResponse:
         url = 'https://crypto24.random-oracle.xyz/validate/list2/modp/challenge'
         payload = ChallengeModPRequest(public=str(public))
-        print(f"{payload=}")
+        print(f"modp {payload.model_dump_json()=}")
         response = requests.post(url, json=payload.model_dump())
         if 'detail' in response.json():
             raise Exception(f"Error {response.json()} during modp challenge!")
@@ -340,7 +332,7 @@ class Api:
     def f2m_challenge(self, public: int) -> ChallengeF2mResponse:
         url = 'https://crypto24.random-oracle.xyz/validate/list2/f2m/challenge'
         payload = ChallengeF2mRequest(public=str(public))
-        # print(f"{payload=}")
+        print(f"f2m {payload.model_dump_json()=}")
         response = requests.post(url, json=payload.model_dump())
 
         if 'detail' in response.json():
@@ -350,6 +342,7 @@ class Api:
     def fpk_challenge(self, public: list[int]) -> ChallengeFpkResponse:
         url = 'https://crypto24.random-oracle.xyz/validate/list2/fpk/challenge'
         payload = ChallengeFpkRequest(public=[str(x) for x in public])
+        print(f"fpk {payload.model_dump_json()=}")
         response = requests.post(url, json=payload.model_dump())
         if 'detail' in response.json():
             raise Exception(f"Error {response.json()} during fpk challenge!")

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import logging
 import sys
-from f_p import FpElement
+from .f_p import FpElement
 import unittest
 
 @dataclass
@@ -202,7 +202,7 @@ class FpkElement:
             if exp % 2 == 1:
                 result = result * base
             else:
-                dummy = result*base
+                dummy = dummy * base
             base = base*base
             exp //= 2
         return result

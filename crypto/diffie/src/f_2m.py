@@ -130,7 +130,7 @@ class F2mElement:
             if exp % 2 == 1:
                 result = result * base
             else:
-                dummy = result * base
+                dummy = dummy * base
             base = base*base
             exp //= 2
         return result
